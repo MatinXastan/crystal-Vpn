@@ -6,8 +6,9 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial()) {
-    on<HomeEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+    on<ConnectToVpnEvent>((event, emit) {});
+
+    on<DisconnectFromVpnEvent>((event, emit) {});
+    on<CheckLocationVpnEvent>((event, emit) {});
   }
 }

@@ -1,10 +1,9 @@
-import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
+import 'package:flutter_v2ray/flutter_v2ray.dart'; // Import for _tryParse
+import 'package:provider/provider.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
+import 'package:vpn/services/v2ray_services.dart';
 import '../../gen/assets.gen.dart';
 
 class ProtocolScreen extends StatefulWidget {
@@ -22,183 +21,22 @@ class ProtocolScreen extends StatefulWidget {
 }
 
 class _ProtocolScreenState extends State<ProtocolScreen> {
-  late final FlutterV2ray _flutterV2ray;
-  String _v2rayState = "DISCONNECTED";
-
-  final Map<String, int> _pingResults = {};
-  ConfigModel? _selectedConfig;
-  // وضعیت در حال تست همه سرورها
-  bool _isPingingAll = false;
-  int _pingedCount = 0;
-
-  // ✅ [تغییر ۱]: یک لیست جدید برای نمایش و مرتب‌سازی ایجاد می‌کنیم تا لیست اصلی دستکاری نشود
-  List<ConfigModel> _displayConfigs = [];
-  DateTime? _lastPingTime;
-
   @override
   void initState() {
     super.initState();
-    _flutterV2ray = FlutterV2ray(
-      onStatusChanged: (status) {
-        if (mounted) {
-          setState(() => _v2rayState = status.state.toString().split('.').last);
-        }
-        log('V2Ray status: ${status.state}');
-      },
-    );
-
-    // ✅ [تغییر ۲]: لیست نمایشی را با داده‌های اولیه که از ویجت پدر آمده پر می‌کنیم
-    _displayConfigs = List.from(widget.configs);
-
-    for (var configModel in widget.configs) {
-      _pingResults[configModel.config] = 0;
-    }
-  }
-
-  Future<void> _getAllPings() async {
-    if (_isPingingAll) return;
-
-    setState(() {
-      _isPingingAll = true;
-      _pingedCount = 0;
-      for (var configModel in widget.configs) {
-        _pingResults[configModel.config] = 0;
-      }
+    // در اولین اجرا، لیست کانفیگ‌ها را به سرویس می‌دهیم
+    // از context.read استفاده می‌کنیم چون فقط یک بار نیاز به فراخوانی داریم
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<V2rayService>().initializeConfigs(widget.configs);
     });
-
-    try {
-      await _flutterV2ray.initializeV2Ray();
-    } catch (e) {
-      log('Failed to initialize V2Ray: $e');
-      if (mounted) setState(() => _isPingingAll = false);
-      return;
-    }
-    final request = await _flutterV2ray.requestPermission();
-    for (final configModel in _displayConfigs) {
-      // حالا روی لیست نمایشی حلقه می‌زنیم
-      if (!_isPingingAll) break;
-
-      final configUrl = configModel.config;
-
-      if (mounted) {
-        setState(() {
-          _pingResults[configUrl] = -3; // Pinging...
-        });
-      }
-
-      final result = await _getSinglePingByConnecting(
-        configModel,
-        request: request,
-      );
-
-      if (mounted) {
-        setState(() {
-          _pingResults[result.config] = result.delay;
-          _pingedCount++;
-        });
-      }
-    }
-
-    // ✅ [تغییر ۳]: بعد از اتمام حلقه، تابع مرتب‌سازی را فراخوانی می‌کنیم
-    _sortConfigsByPing();
-  }
-
-  // ✅ [تغییر ۴]: یک تابع جداگانه برای مرتب‌سازی لیست ایجاد کردیم
-  void _sortConfigsByPing() {
-    if (mounted) {
-      setState(() {
-        _displayConfigs.sort((a, b) {
-          // پینگ هر دو آیتم را از نقشه نتایج می‌خوانیم
-          final int pingA = _pingResults[a.config] ?? -1;
-          final int pingB = _pingResults[b.config] ?? -1;
-
-          // قانون ۱: سرورهای سالم (پینگ مثبت) همیشه بالاتر از سرورهای خراب هستند
-          if (pingA > 0 && pingB <= 0) {
-            return -1; // a بالاتر قرار می‌گیرد
-          }
-          if (pingB > 0 && pingA <= 0) {
-            return 1; // b بالاتر قرار می‌گیرد
-          }
-
-          // قانون ۲: اگر هر دو سرور سالم هستند، بر اساس پینگ کمتر مرتب کن (صعودی)
-          if (pingA > 0 && pingB > 0) {
-            return pingA.compareTo(pingB);
-          }
-
-          // قانون ۳: اگر هر دو خراب هستند، ترتیبشان مهم نیست
-          return 0;
-        });
-        //برای ثبت تاریخ از آخرین باری که کانفیگ گرفته شد
-        _lastPingTime = DateTime.now();
-
-        // در نهایت وضعیت در حال تست را غیرفعال می‌کنیم
-        _isPingingAll = false;
-      });
-    }
-  }
-
-  Future<ConfigModel> _getSinglePingByConnecting(
-    ConfigModel configModel, {
-    bool request = true,
-  }) async {
-    V2RayURL? parser;
-    try {
-      parser = _tryParse(configModel.config);
-      if (parser == null) {
-        return configModel.copyWith(delay: -2);
-      }
-
-      if (request) {
-        await _flutterV2ray.startV2Ray(
-          remark: parser.remark,
-          config: parser.getFullConfiguration(),
-        );
-      }
-
-      await Future.delayed(const Duration(seconds: 2));
-      if (_v2rayState != 'CONNECTED') {
-        await Future.delayed(const Duration(seconds: 2));
-      }
-
-      if (_v2rayState == 'CONNECTED') {
-        final delay = await _flutterV2ray.getConnectedServerDelay();
-        return configModel.copyWith(delay: delay > 0 ? delay : -1);
-      } else {
-        log(
-          "Connection timed out or failed for ${parser.remark}. State: $_v2rayState",
-        );
-        return configModel.copyWith(delay: -1);
-      }
-    } catch (e) {
-      log(
-        "Error during connect-ping process for ${parser?.remark ?? 'config'}: $e",
-      );
-      return configModel.copyWith(delay: -1);
-    } finally {
-      await _flutterV2ray.stopV2Ray();
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
-  }
-
-  V2RayURL? _tryParse(String url) {
-    try {
-      return FlutterV2ray.parseFromURL(url);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  void _stopPinging() {
-    if (mounted) {
-      setState(() {
-        _isPingingAll = false;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    // با context.watch به سرویس گوش می‌دهیم. هر تغییری در سرویس باعث بازسازی این ویجت می‌شود
+    final v2rayService = context.watch<V2rayService>();
+
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -212,35 +50,43 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _displayConfigs.length + 1,
+                    // حالا از v2rayService.displayConfigs استفاده می‌کنیم
+                    itemCount: v2rayService.displayConfigs.length + 1,
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
-                      // اول شرط را بررسی کن
                       if (index == 0) {
-                        return autoButton(size);
+                        return autoButton(size, v2rayService);
                       } else {
-                        // حالا که مطمئن هستیم index بزرگتر از صفر است، متغیرها را تعریف کن
                         final dataIndex = index - 1;
-                        // از dataIndex برای دسترسی به لیست استفاده کن
-                        final configItem = _displayConfigs[dataIndex];
-                        final ping = _pingResults[configItem.config] ?? 0;
+                        final configItem =
+                            v2rayService.displayConfigs[dataIndex];
+                        // نتایج پینگ را هم از سرویس می‌خوانیم
+                        final ping =
+                            v2rayService.pingResults[configItem.config] ?? 0;
 
                         return Padding(
                           padding: EdgeInsets.fromLTRB(
                             12,
                             12,
                             12,
-                            index == _displayConfigs.length ? 170 : 12,
+                            index == v2rayService.displayConfigs.length
+                                ? 170
+                                : 12,
                           ),
                           child: V2rayConfigBox(
                             size: size,
                             protocolType: widget.protocolType,
                             configs: configItem.config,
                             delay: ping,
+                            // وضعیت انتخاب شده را از سرویس می‌خوانیم
                             isSelected:
-                                _selectedConfig?.config == configItem.config,
+                                v2rayService.selectedConfig?.config ==
+                                configItem.config,
                             onTap: () {
-                              setState(() => _selectedConfig = configItem);
+                              // برای انتخاب یک کانفیگ، متد سرویس را صدا می‌زنیم
+                              context.read<V2rayService>().selectConfig(
+                                configItem,
+                              );
                             },
                           ),
                         );
@@ -253,7 +99,8 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
             Positioned(
               left: 16,
               bottom: size.height / 8,
-              child: _buildRefreshButton(),
+              // دکمه رفرش هم وضعیت خود را از سرویس می‌خواند
+              child: _buildRefreshButton(v2rayService),
             ),
             Positioned(
               left: 0,
@@ -273,14 +120,14 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
     );
   }
 
-  Widget autoButton(Size size) {
+  Widget autoButton(Size size, V2rayService service) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 48, 12, 12),
       child: GestureDetector(
         onTap: () {
-          if (_isPingingAll) {
+          if (service.isPingingAll) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 duration: Duration(seconds: 3),
                 content: Text(
                   'لطفاً تا پایان عملیات تست پینگ صبر کنید.',
@@ -291,22 +138,23 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
             );
           } else {
             final now = DateTime.now();
-            final difference = now.difference(_lastPingTime!);
-
-            if (difference.inHours >= 6) {
+            final lastPing =
+                service.lastPingTime ?? now.subtract(const Duration(days: 1));
+            if (now.difference(lastPing).inHours >= 6) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   duration: Duration(seconds: 3),
                   content: Text(
-                    'بیش از 6 ساعته که از کانفیگ ها تست نشده اند باید کانفیگ ها تست پینگ شوند',
+                    'بیش از 6 ساعت است که کانفیگ ها تست نشده اند. تست پینگ شروع می شود.',
                     style: TextStyle(color: Colors.white),
                   ),
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: Colors.orangeAccent,
                 ),
               );
-              _getAllPings();
+              context.read<V2rayService>().getAllPings();
             } else {
               //TODO: باید برم به هوم اسکرین
+              // Example: Navigator.of(context).popUntil((route) => route.isFirst);
             }
           }
         },
@@ -318,7 +166,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
             child: Row(
               children: [
                 Icon(
-                  Icons.auto_awesome, // آیکون مناسب برای حالت خودکار
+                  Icons.auto_awesome,
                   color: Color.fromARGB(255, 2, 255, 196),
                   size: 50,
                 ),
@@ -342,8 +190,8 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
     );
   }
 
-  Widget _buildRefreshButton() {
-    if (_isPingingAll) {
+  Widget _buildRefreshButton(V2rayService service) {
+    if (service.isPingingAll) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         height: 75,
@@ -352,7 +200,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
           color: Colors.black.withOpacity(0.5),
         ),
         child: InkWell(
-          onTap: _stopPinging,
+          onTap: () => context.read<V2rayService>().stopPinging(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -366,7 +214,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                "${_pingedCount}/${widget.configs.length}",
+                "${service.pingedCount}/${service.totalConfigs}",
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -387,12 +235,14 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
         color: Color.fromARGB(255, 2, 255, 196),
       ),
       child: IconButton(
-        onPressed: _getAllPings,
+        onPressed: () => context.read<V2rayService>().getAllPings(),
         icon: const Icon(Icons.speed_rounded, size: 36, color: Colors.black),
       ),
     );
   }
 }
+
+// ویجت V2rayConfigBox و اکستنشن به فایل اضافه شدند تا کامل باشد
 
 class V2rayConfigBox extends StatelessWidget {
   const V2rayConfigBox({
@@ -414,7 +264,6 @@ class V2rayConfigBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ... (توابع getPingStatusText و getPingStatusColor بدون تغییر باقی می‌مانند)
     String getPingStatusText(int p) {
       if (p == 0) return '...';
       if (p == -1) return 'Error';
@@ -434,12 +283,7 @@ class V2rayConfigBox extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          // ✅ [تغییر جدید اینجاست]
-          color: isSelected
-              ? Colors.green.shade600.withOpacity(
-                  0.5,
-                ) // رنگ سبز پررنگ در حالت انتخاب
-              : null, // در حالت عادی، رنگ پس‌زمینه ندارد تا افکت شیشه‌ای دیده شود
+          color: isSelected ? Colors.green.shade600.withOpacity(0.5) : null,
           borderRadius: BorderRadius.circular(20),
           border: isSelected
               ? Border.all(color: const Color(0xFF00FFD1), width: 2.5)
@@ -460,7 +304,6 @@ class V2rayConfigBox extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
-              // ... بقیه کد بدون تغییر
               children: [
                 const Icon(
                   Icons.security,
