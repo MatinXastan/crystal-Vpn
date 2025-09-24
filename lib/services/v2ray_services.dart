@@ -179,7 +179,25 @@ class V2rayService with ChangeNotifier {
     }
   }
 
-  /* Future<void> connectAutto(){
-    if()
-  } */
+  Future<List<ConfigModel>> connectAuto() async {
+    /* if (displayConfigs.length > 1) {
+      
+    }else{
+
+    } */
+    final DateTime now = DateTime.now();
+    final diffrence = now.difference(
+      _lastPingTime ?? now.subtract(const Duration(days: 1)),
+    );
+    if (diffrence.inHours >= 6) {
+      try {
+        await getAllPings();
+        return displayConfigs;
+      } catch (e) {
+        throw Exception('Error during auto-connect ping: $e');
+      }
+    } else {
+      return displayConfigs;
+    }
+  }
 }

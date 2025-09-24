@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vpn/screens/configVpnScreen/config_list_screen.dart';
 import 'package:vpn/screens/home/home_screen.dart';
 import 'package:vpn/screens/profile/profile_screen.dart';
 import 'package:vpn/screens/widgets/btm_nav_item.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
-
-class BtmNavScreenIndex {
-  BtmNavScreenIndex._();
-  static const home = 0;
-  static const config = 1;
-  static const profile = 2;
-}
+import 'package:vpn/services/nav_provider.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen({super.key});
@@ -20,9 +15,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final List<int> _routeHistory = [BtmNavScreenIndex.home];
+  // دیگر به متغیرهای selectedIndex و _routeHistory در اینجا نیازی نیست
 
-  int selectedIndex = BtmNavScreenIndex.home;
   final GlobalKey<NavigatorState> _homeKey = GlobalKey();
   final GlobalKey<NavigatorState> _configKey = GlobalKey();
   final GlobalKey<NavigatorState> _profileKey = GlobalKey();
@@ -33,39 +27,34 @@ class _MainScreenState extends State<MainScreen> {
     BtmNavScreenIndex.profile: _profileKey,
   };
 
-  // map[0] => _homeKey
-  // map[1] => _basketKey
-  // map[2] => _profileKey
-
-  Future<bool> _onWillPop() async {
-    if (map[selectedIndex]!.currentState!.canPop()) {
-      map[selectedIndex]!.currentState!.pop();
-    } else if (_routeHistory.length > 1) {
-      setState(() {
-        _routeHistory.removeLast();
-        selectedIndex = _routeHistory.last;
-      });
+  Future<bool> _onWillPop(NavigationProvider navProvider) async {
+    // از وضعیت داخل provider استفاده می‌کنیم
+    if (map[navProvider.selectedIndex]!.currentState!.canPop()) {
+      map[navProvider.selectedIndex]!.currentState!.pop();
+    } else if (navProvider.routeHistory.length > 1) {
+      // از متد goBack در provider استفاده می‌کنیم
+      navProvider.goBack();
     }
-
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
+    // به نمونه‌ی NavigationProvider دسترسی پیدا می‌کنیم
+    final navProvider = Provider.of<NavigationProvider>(context);
+
     var size = MediaQuery.of(context).size;
     double btmNavHeight = size.height * .1;
+
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: () => _onWillPop(navProvider),
       child: Scaffold(
         body: Stack(
           children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
+            Positioned.fill(
               child: IndexedStack(
-                index: selectedIndex,
+                // از selectedIndex در provider استفاده می‌کنیم
+                index: navProvider.selectedIndex,
                 children: [
                   Navigator(
                     key: _homeKey,
@@ -88,7 +77,6 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ),
-            //ui navigator buttom
             Positioned(
               bottom: 0,
               left: 0,
@@ -103,66 +91,32 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       BtmNavItem(
                         icon: Icons.person,
+                        // متد provider را برای تغییر تب صدا می‌زنیم
                         ontap: () =>
-                            btmNavOnPressed(index: BtmNavScreenIndex.profile),
-                        isSelected: selectedIndex == BtmNavScreenIndex.profile,
+                            navProvider.changeTab(BtmNavScreenIndex.profile),
+                        isSelected:
+                            navProvider.selectedIndex ==
+                            BtmNavScreenIndex.profile,
                       ),
                       BtmNavItem(
                         icon: Icons.home,
                         ontap: () =>
-                            btmNavOnPressed(index: BtmNavScreenIndex.home),
-                        isSelected: selectedIndex == BtmNavScreenIndex.home,
+                            navProvider.changeTab(BtmNavScreenIndex.home),
+                        isSelected:
+                            navProvider.selectedIndex == BtmNavScreenIndex.home,
                       ),
                       BtmNavItem(
                         icon: Icons.signal_cellular_alt,
                         ontap: () =>
-                            btmNavOnPressed(index: BtmNavScreenIndex.config),
-                        isSelected: selectedIndex == BtmNavScreenIndex.config,
+                            navProvider.changeTab(BtmNavScreenIndex.config),
+                        isSelected:
+                            navProvider.selectedIndex ==
+                            BtmNavScreenIndex.config,
                       ),
-                      /* 
-                      BtmNavItem(
-                        iconSvgPath: Assets.svg.home,
-                        /* text: "خانه", */
-                        isActive: selectedIndex == BtmNavScreenIndex.home,
-                        onTap: () =>
-                            btmNavOnPressed(index: BtmNavScreenIndex.home),
-                      ), */
                     ],
                   ),
                 ),
               ),
-              /* Container(
-                height: btmNavHeight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    BtmNavItem(
-                      icon: Icons.person,
-                      ontap: () {},
-                      isSelected: selectedIndex == BtmNavScreenIndex.profile,
-                    ),
-                    BtmNavItem(
-                      icon: Icons.home,
-                      ontap: () {},
-                      isSelected: selectedIndex == BtmNavScreenIndex.home,
-                    ),
-                    BtmNavItem(
-                      icon: Icons.signal_cellular_alt, 
-                      ontap: () {},
-                      isSelected: selectedIndex == BtmNavScreenIndex.config,
-                    ),
-                    /* 
-                    BtmNavItem(
-                      iconSvgPath: Assets.svg.home,
-                      /* text: "خانه", */
-                      isActive: selectedIndex == BtmNavScreenIndex.home,
-                      onTap: () =>
-                          btmNavOnPressed(index: BtmNavScreenIndex.home),
-                    ), */
-                  ],
-                ),
-              ), */
             ),
           ],
         ),
@@ -170,10 +124,5 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  btmNavOnPressed({required index}) {
-    setState(() {
-      selectedIndex = index;
-      _routeHistory.add(selectedIndex);
-    });
-  }
+  // دیگر به متد btmNavOnPressed نیازی نیست
 }

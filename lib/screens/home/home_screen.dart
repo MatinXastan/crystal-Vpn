@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'package:vpn/gen/assets.gen.dart';
 import 'package:vpn/screens/widgets/connection_button.dart';
+import 'package:vpn/screens/widgets/custom_segmented_button.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         extendBody: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.transparent,
 
         body: Stack(
           children: [
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             //TODO: add connection button
             Center(child: ConnectButton()),
+
+            Positioned(right: 12, top: 12, child: MySegmentedButton()),
           ],
         ),
       ),
