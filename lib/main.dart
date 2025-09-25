@@ -5,13 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/vpn_model.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
-import 'package:vpn/screens/home/home_screen.dart';
 import 'package:vpn/main_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
-import 'package:vpn/test1.dart';
-import 'package:vpn/test_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,15 +18,15 @@ Future<void> main() async {
   Hive.registerAdapter(VpnModelAdapter());
   Hive.registerAdapter(ConfigTypeAdapter());
   await Hive.openBox<VpnModel>(Conf.configBox);
+  await reciveConfigsRepo.reciveConfigAdvancedAuto();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => V2rayService()),
-        ChangeNotifierProvider(
-          create: (context) => NavigationProvider(), // کلاس دوم
-        ),
-        // می‌تونی هر تعداد ChangeNotifierProvider دیگه هم اضافه کنی
+        // FIX: Provide the ReciveConfigsRepo instance itself, not just its notifier.
+        Provider<ReciveConfigsRepo>(create: (context) => reciveConfigsRepo),
+        ChangeNotifierProvider(create: (context) => NavigationProvider()),
       ],
       child: const MyApp(),
     ),
@@ -39,7 +36,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

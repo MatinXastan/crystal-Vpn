@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_v2ray/flutter_v2ray.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/screens/configVpnScreen/protocol_screen.dart';
-// import 'package:vpn/screens/configVpnScreen/protocol_screen.dart'; // این import استفاده نشده بود
 
 // کلاس سرویس ما که از ChangeNotifier ارث‌بری می‌کند تا بتواند به UI اطلاع‌رسانی کند
 class V2rayService with ChangeNotifier {
@@ -30,6 +29,7 @@ class V2rayService with ChangeNotifier {
   int _pingedCount = 0;
   List<ConfigModel> _displayConfigs = [];
   DateTime? _lastPingTime;
+  List<ConfigModel> _autoAdvancedConfigs = [];
 
   // --- Getter ها برای دسترسی امن به متغیرها از بیرون ---
   bool get isPingingAll => _isPingingAll;
@@ -39,6 +39,7 @@ class V2rayService with ChangeNotifier {
   ConfigModel? get selectedConfig => _selectedConfig;
   Map<String, int> get pingResults => _pingResults;
   DateTime? get lastPingTime => _lastPingTime;
+  List<ConfigModel> get getAutoAdvancedConfigs => _autoAdvancedConfigs;
 
   // متد برای مقداردهی اولیه لیست کانفیگ‌ها
   void initializeConfigs(List<ConfigModel> configs) {

@@ -8,7 +8,7 @@ import 'package:vpn/screens/widgets/glass_box.dart';
 import 'package:vpn/services/nav_provider.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({super.key});
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();

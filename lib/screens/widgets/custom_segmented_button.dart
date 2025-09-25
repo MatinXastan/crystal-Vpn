@@ -45,6 +45,7 @@ class _MySegmentedButtonState extends State<MySegmentedButton> {
           ).changeTab(BtmNavScreenIndex.config);
         }
       },
+
       // استایل شما بدون تغییر باقی می‌ماند
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
