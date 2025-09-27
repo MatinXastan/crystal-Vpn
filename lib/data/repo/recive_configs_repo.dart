@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vpn/configurations/conf.dart';
+import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/src/recive_configs_data_src.dart';
 
@@ -14,8 +15,13 @@ class ReciveConfigsRepo implements IReciveConfigsRepo {
 
   ReciveConfigsRepo({required this.dataSrc});
 
-  final ValueNotifier<List<ConfigModel>> configsNotifier =
-      ValueNotifier<List<ConfigModel>>([]);
+  final ValueNotifier<ConfigAdvancedModel> configsAdvancedAutoNotifier =
+      ValueNotifier<ConfigAdvancedModel>(
+        ConfigAdvancedModel(
+          configs: [],
+          whenFetched: DateTime.now().subtract(Duration(days: 1)),
+        ),
+      );
   @override
   Future<List<String>> futureConfigs(String fileName) {
     return dataSrc.futureConfigs(fileName);
@@ -25,13 +31,17 @@ class ReciveConfigsRepo implements IReciveConfigsRepo {
   Future<List<ConfigModel>> reciveConfigAdvancedAuto() async {
     final models = await dataSrc.reciveConfigAdvancedAuto();
 
-    configsNotifier.value = models;
+    configsAdvancedAutoNotifier.value = ConfigAdvancedModel(
+      configs: models,
+      whenFetched: DateTime.now(),
+    );
+
     return models;
   }
 
   // متد کمکی برای پاک‌سازی Listenerها (صدا زدن از بیرون در dispose)
   void dispose() {
-    configsNotifier.dispose();
+    configsAdvancedAutoNotifier.dispose();
   }
 }
 

@@ -40,7 +40,7 @@ class V2rayService with ChangeNotifier {
   Map<String, int> get pingResults => _pingResults;
   DateTime? get lastPingTime => _lastPingTime;
   List<ConfigModel> get getAutoAdvancedConfigs => _autoAdvancedConfigs;
-
+  String get statuseVpn => v2rayState;
   // متد برای مقداردهی اولیه لیست کانفیگ‌ها
   void initializeConfigs(List<ConfigModel> configs) {
     _displayConfigs = List.from(configs);
@@ -180,7 +180,9 @@ class V2rayService with ChangeNotifier {
     }
   }
 
-  Future<List<ConfigModel>> connectAuto() async {
+  /// متد برای اتصال خودکار به بهترین کانفیگ بر اساس پینگ
+  /// همچنین چک بر اساس تاریخ چک میکنه اگه کانفیگ ها قدیمی باشند اول تست پینگ میگیره بعد کانکیت میشه به بهترین پیمنگ
+  Future<void> connectAuto() async {
     /* if (displayConfigs.length > 1) {
       
     }else{
@@ -193,12 +195,67 @@ class V2rayService with ChangeNotifier {
     if (diffrence.inHours >= 6) {
       try {
         await getAllPings();
-        return displayConfigs;
+        notifyListeners();
+        final bestConfigPing = displayConfigs.first;
+        await connect(bestConfigPing);
+        notifyListeners();
       } catch (e) {
         throw Exception('Error during auto-connect ping: $e');
       }
     } else {
-      return displayConfigs;
+      final bestConfigPing = displayConfigs.first;
+      await connect(bestConfigPing);
+    }
+  }
+
+  /// متد برای قطع اتصال VPN
+  Future<void> disconnect() async {
+    // فقط در صورتی که اتصال برقرار باشد، آن را قطع می‌کنیم
+    if (v2rayState != 'DISCONNECTED') {
+      try {
+        await flutterV2ray.stopV2Ray();
+        // پس از قطع اتصال، کانفیگ انتخاب شده را null می‌کنیم
+        selectConfig(null);
+      } catch (e) {
+        log('Error disconnecting from V2Ray: $e');
+        v2rayState = "ERROR";
+        notifyListeners();
+      }
+    }
+  }
+
+  /// متد برای وصل شدن به یک کانفیگ مشخص
+  /// این متد کانفیگ را به عنوان ورودی می‌گیرد و سعی می‌کند به آن متصل شود
+  Future<void> connect(ConfigModel config) async {
+    // اگر در حال اتصال یا از قبل وصل بودیم، دوباره تلاش نمی‌کنیم
+    if (v2rayState == 'CONNECTED' || v2rayState == 'CONNECTING') {
+      log('Already connected or in the process of connecting.');
+      return;
+    }
+
+    // ابتدا کانفیگ ورودی را به عنوان کانفیگ انتخاب شده ذخیره می‌کنیم
+    selectConfig(config);
+
+    final parser = _tryParse(config.config);
+    if (parser == null) {
+      log('Error: Invalid config format.');
+      v2rayState = "ERROR";
+      notifyListeners();
+      return;
+    }
+
+    try {
+      // فرآیند اتصال را با کانفیگ کامل شروع می‌کنیم
+      // proxyOnly باید false باشد تا کل دستگاه به VPN وصل شود
+      await flutterV2ray.startV2Ray(
+        remark: parser.remark,
+        config: parser.getFullConfiguration(),
+        proxyOnly: false,
+      );
+    } catch (e) {
+      log('Error connecting to V2Ray: $e');
+      v2rayState = "ERROR";
+      notifyListeners();
     }
   }
 }

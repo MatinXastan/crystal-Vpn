@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:vpn/configurations/validators.dart';
+import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
-import 'package:vpn/screens/widgets/custom_segmented_button.dart';
+import 'package:vpn/screens/home/custom_segmented_button.dart';
 import 'package:vpn/services/v2ray_services.dart';
 
 part 'home_event.dart';
@@ -12,9 +13,13 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final V2rayService _v2rayService;
   final IReciveConfigsRepo reciveConfigsRepo;
-  HomeBloc(this.reciveConfigsRepo, {required V2rayService v2rayService})
-    : _v2rayService = v2rayService,
-      super(HomeInitial()) {
+  final ConfigAdvancedModel advancedAutoConfigs;
+  HomeBloc({
+    required this.advancedAutoConfigs, // پارامتر اختیاری
+    required V2rayService v2rayService,
+    required this.reciveConfigsRepo,
+  }) : _v2rayService = v2rayService,
+       super(HomeInitial()) {
     on<ConnectToVpnEvent>((event, emit) async {
       /* if (_v2rayService.selectedConfig == null) {
         if (_v2rayService.displayConfigs.length > 1) {
@@ -26,7 +31,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       } */
 
-      if (event.selectedMode == ConnectionMode.advancedAuto) {}
+      if (event.selectedMode == ConnectionMode.advancedAuto) {
+        emit(StartChanginstatusState(status: 1));
+        _v2rayService.initializeConfigs(advancedAutoConfigs.configs);
+        await _v2rayService.connectAuto();
+      }
     });
   }
 }

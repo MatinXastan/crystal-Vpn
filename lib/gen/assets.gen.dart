@@ -36,12 +36,17 @@ class $AssetsImagesGen {
   AssetGenImage get playRed =>
       const AssetGenImage('assets/images/play_red.png');
 
+  /// File path: assets/images/play_yellow.png
+  AssetGenImage get playYellow =>
+      const AssetGenImage('assets/images/play_yellow.png');
+
   /// File path: assets/images/stop_green.png
   AssetGenImage get stopGreen =>
       const AssetGenImage('assets/images/stop_green.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [background, playBlue, playRed, stopGreen];
+  List<AssetGenImage> get values =>
+      [background, playBlue, playRed, playYellow, stopGreen];
 }
 
 class $AssetsImagesBackgroundsGen {

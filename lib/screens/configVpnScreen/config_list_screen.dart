@@ -10,7 +10,7 @@ import 'package:vpn/gen/assets.gen.dart';
 import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
 import 'package:vpn/screens/configVpnScreen/empty_config_screen.dart';
 import 'package:vpn/screens/configVpnScreen/protocol_screen.dart';
-import 'package:vpn/screens/widgets/connection_button.dart';
+import 'package:vpn/screens/home/connection_button.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 import 'package:vpn/screens/widgets/aurora_border.dart';
 

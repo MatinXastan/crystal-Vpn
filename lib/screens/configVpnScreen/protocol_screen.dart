@@ -3,6 +3,7 @@ import 'package:flutter_v2ray/flutter_v2ray.dart'; // Import for _tryParse
 import 'package:provider/provider.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
+import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
 import '../../gen/assets.gen.dart';
 
@@ -124,7 +125,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 48, 12, 12),
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (service.isPingingAll) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -151,10 +152,16 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
                   backgroundColor: Colors.orangeAccent,
                 ),
               );
-              context.read<V2rayService>().getAllPings();
+              await context.read<V2rayService>().getAllPings();
             } else {
-              //TODO: باید برم به هوم اسکرین
-              // Example: Navigator.of(context).popUntil((route) => route.isFirst);
+              final ConfigModel bestPing = context
+                  .read<V2rayService>()
+                  .displayConfigs
+                  .first;
+              context.read<V2rayService>().connect(bestPing);
+              context.read<NavigationProvider>().changeTab(
+                BtmNavScreenIndex.home,
+              );
             }
           }
         },
