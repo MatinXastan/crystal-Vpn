@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned.fill(
                 child: Assets.images.background.image(fit: BoxFit.cover),
               ),
-              Center(child: ConnectButton(statusVpn: statuseConnect)),
+              Center(child: ConnectButton()),
               const Positioned(right: 12, top: 12, child: MySegmentedButton()),
             ],
           ),

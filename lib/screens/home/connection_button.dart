@@ -14,14 +14,13 @@ final double sizePaddingLeft = 10;
 
 class ConnectButton extends StatefulWidget {
   int status = 0;
-  String statusVpn;
-  ConnectButton({super.key, required this.statusVpn});
+
+  ConnectButton({super.key});
 
   @override
   State<ConnectButton> createState() => _ConnectButtonState();
 }
 
-//0:blue && 1:yellow && 2:green && 3:red
 class _ConnectButtonState extends State<ConnectButton> {
   final List<ImageProvider> connectButtoms = [
     Assets.images.connectButtons.blue.image().image,
@@ -65,21 +64,19 @@ class _ConnectButtonState extends State<ConnectButton> {
 
   double _opacity = 1.0;
 
-  void _changeStatus(HomeState state) {
-    if (state is StartChanginstatusState) {
+  void _changeStatus() {
+    setState(() {
+      _opacity = 0.0;
+    });
+    /* context.read<HomeBloc>().add(
+      ConnectToVpnEvent(selectedMode: ConnectionMode.advancedAuto),
+    ); */
+    Future.delayed(const Duration(milliseconds: 800), () {
       setState(() {
-        _opacity = 0.0;
+        widget.status = (widget.status + 1) % 3;
+        _opacity = 1.0;
       });
-      context.read<HomeBloc>().add(
-        ConnectToVpnEvent(selectedMode: ConnectionMode.advancedAuto),
-      );
-      Future.delayed(const Duration(milliseconds: 800), () {
-        setState(() {
-          widget.status = state.status;
-          _opacity = 1.0;
-        });
-      });
-    }
+    });
   }
 
   @override
@@ -87,7 +84,7 @@ class _ConnectButtonState extends State<ConnectButton> {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return GestureDetector(
-          onTap: () => _changeStatus(state),
+          onTap: _changeStatus,
           child: AnimatedOpacity(
             opacity: _opacity,
             duration: const Duration(milliseconds: 1000),
