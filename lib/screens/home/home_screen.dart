@@ -56,7 +56,14 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned.fill(
                 child: Assets.images.background.image(fit: BoxFit.cover),
               ),
-              Center(child: ConnectButton()),
+              Center(
+                child: Consumer<V2rayService>(
+                  builder: (context, service, child) {
+                    // عدد وضعیت را به ویجت دکمه پاس می‌دهیم
+                    return ConnectButton(status: service.statusConnection);
+                  },
+                ),
+              ),
               const Positioned(right: 12, top: 12, child: MySegmentedButton()),
             ],
           ),

@@ -22,6 +22,7 @@ class V2rayService with ChangeNotifier {
   late final FlutterV2ray flutterV2ray;
 
   // --- متغیرهای وضعیت ---
+  int status = 0;
   String v2rayState = "DISCONNECTED";
   final Map<String, int> _pingResults = {};
   ConfigModel? _selectedConfig;
@@ -41,6 +42,7 @@ class V2rayService with ChangeNotifier {
   DateTime? get lastPingTime => _lastPingTime;
   List<ConfigModel> get getAutoAdvancedConfigs => _autoAdvancedConfigs;
   String get statuseVpn => v2rayState;
+  int get statusConnection => status;
   // متد برای مقداردهی اولیه لیست کانفیگ‌ها
   void initializeConfigs(List<ConfigModel> configs) {
     _displayConfigs = List.from(configs);
@@ -62,7 +64,9 @@ class V2rayService with ChangeNotifier {
     if (_isPingingAll) return;
 
     _isPingingAll = true;
+    status = 1;
     _pingedCount = 0;
+    notifyListeners();
     // ریست کردن نتایج پینگ‌های قبلی
     _pingResults.updateAll((key, value) => 0);
     notifyListeners(); // اطلاع به UI که پینگ شروع شده
@@ -121,6 +125,7 @@ class V2rayService with ChangeNotifier {
 
   void stopPinging() {
     _isPingingAll = false;
+    status = 0;
     notifyListeners();
   }
 
@@ -200,6 +205,8 @@ class V2rayService with ChangeNotifier {
         await connect(bestConfigPing);
         notifyListeners();
       } catch (e) {
+        status = 3;
+        notifyListeners();
         throw Exception('Error during auto-connect ping: $e');
       }
     } else {
@@ -215,10 +222,13 @@ class V2rayService with ChangeNotifier {
       try {
         await flutterV2ray.stopV2Ray();
         // پس از قطع اتصال، کانفیگ انتخاب شده را null می‌کنیم
+        status = 0;
         selectConfig(null);
+        notifyListeners();
       } catch (e) {
         log('Error disconnecting from V2Ray: $e');
         v2rayState = "ERROR";
+        status = 3;
         notifyListeners();
       }
     }
@@ -252,9 +262,12 @@ class V2rayService with ChangeNotifier {
         config: parser.getFullConfiguration(),
         proxyOnly: false,
       );
+      status = 2;
+      notifyListeners();
     } catch (e) {
       log('Error connecting to V2Ray: $e');
       v2rayState = "ERROR";
+      status = 3;
       notifyListeners();
     }
   }
