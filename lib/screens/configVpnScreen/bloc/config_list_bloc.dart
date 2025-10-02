@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
 import 'package:meta/meta.dart';
 import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/configurations/validators.dart';
@@ -15,8 +14,6 @@ part 'config_list_state.dart';
 class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
   final IDataVpnRepo dataVpnRepo;
   final IReciveConfigsRepo reciveConfigsRepo;
-
-  FlutterV2ray? _flutterV2ray;
 
   ConfigListBloc({required this.dataVpnRepo, required this.reciveConfigsRepo})
     : super(ConfigListInitial()) {
@@ -44,7 +41,7 @@ class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
         }
       }
 
-      // ===== بازنویسی کامل با رویکرد ترتیبی (Sequential) و قابل اعتماد =====
+      /* // ===== بازنویسی کامل با رویکرد ترتیبی (Sequential) و قابل اعتماد =====
       if (event is StartTestingPingsForAllConfigsEvent) {
         final List<ConfigModel> allConfigs = List.from(event.configs);
         final List<ConfigModel> testedConfigs = [];
@@ -60,13 +57,13 @@ class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
 
         // اطمینان از مقداردهی اولیه V2ray (فقط یک بار)
         if (_flutterV2ray == null) {
-          _flutterV2ray = FlutterV2ray(
+          _flutterV2ray = V2ray(
             onStatusChanged: (status) {
               debugPrint("V2Ray Status Changed: ${status.state}");
             },
           );
           try {
-            await _flutterV2ray!.initializeV2Ray();
+            
           } catch (e) {
             emit(
               RecivingConfigsErrorState(
@@ -126,10 +123,10 @@ class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
         });
 
         emit(TestPingConfingsSuccessState(configsTested: testedConfigs));
-      }
+      } */
     });
   }
-
+  /* 
   // متد کمکی برای گرفتن پینگ یک کانفیگ (برای تمیزتر شدن کد)
   Future<ConfigModel> _getSinglePing(ConfigModel configModel) async {
     try {
@@ -156,7 +153,7 @@ class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
       return ConfigModel(config: configModel.config, delay: -1); // خطا
     }
   }
-
+ */
   void separatingconfigs(List<String> configs) {
     // ... این متد بدون تغییر باقی می‌ماند ...
     List<String> vless = [];
@@ -202,11 +199,12 @@ class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
     );
   }
 
+  /* 
   V2RayURL? _tryParse(String url) {
     try {
-      return FlutterV2ray.parseFromURL(url);
+      return V2ray.parseFromURL(url);
     } catch (e) {
       return null;
     }
-  }
+  } */
 }

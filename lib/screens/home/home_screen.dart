@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
 import 'package:provider/provider.dart';
 import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
@@ -9,7 +8,11 @@ import 'package:vpn/gen/assets.gen.dart';
 import 'package:vpn/screens/home/bloc/home_bloc.dart';
 import 'package:vpn/screens/home/connection_button.dart';
 import 'package:vpn/screens/home/custom_segmented_button.dart';
+import 'package:vpn/screens/widgets/glass_box.dart';
+import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
+
+enum ConnectionMode { manual, advancedAuto }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late ConfigAdvancedModel advancedAutoConfigs;
   late ReciveConfigsRepo reciveConfigsRepository; // Define repo instance
   String statuseConnect = "DISCONNECTED";
+  ConnectionMode currentMode = ConnectionMode.advancedAuto;
   @override
   void initState() {
     super.initState();
@@ -39,35 +43,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeBloc(
-        v2rayService: v2rayService,
-        reciveConfigsRepo: reciveConfigsRepository,
-        advancedAutoConfigs:
-            advancedAutoConfigs, // Use the instance read in initState
-      ),
-
-      child: SafeArea(
-        child: Scaffold(
-          extendBody: true,
-          backgroundColor: Colors.transparent,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Assets.images.background.image(fit: BoxFit.cover),
-              ),
-              Center(
-                child: Consumer<V2rayService>(
-                  builder: (context, service, child) {
-                    // عدد وضعیت را به ویجت دکمه پاس می‌دهیم
-                    return ConnectButton(status: service.statusConnection);
-                  },
+    final size = MediaQuery.of(context).size;
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Assets.images.background.image(fit: BoxFit.cover),
+            ),
+            Center(
+              child: Consumer<V2rayService>(
+                builder: (context, value, child) => Column(
+                  spacing: 24,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ConnectButton(
+                      status: value.statusConnection,
+                      connectionMode: currentMode,
+                    ),
+                    GlassBox(
+                      width: size.width / 1.1,
+                      height: size.height / 4,
+                      child: Row(),
+                    ),
+                  ],
                 ),
               ),
-              const Positioned(right: 12, top: 12, child: MySegmentedButton()),
-            ],
-          ),
+            ),
+
+            Positioned(
+              right: 12,
+              top: 12,
+              child: MySegmentedButton(
+                onModeChanged: (value) {
+                  setState(() {
+                    currentMode = value;
+                  });
+                },
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

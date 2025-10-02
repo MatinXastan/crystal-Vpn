@@ -5,14 +5,17 @@ sealed class HomeState {}
 
 final class HomeInitial extends HomeState {}
 
-final class StartChanginstatusState extends HomeState {
-  final int status;
+final class ConfigsAreEmptyState extends HomeState {}
 
-  StartChanginstatusState({required this.status});
-}
+final class ConnectingAdvancedAutoConfigState extends HomeState {}
 
-final class StartRecivingConfigAdvancedAutoState extends HomeState {}
+final class ConnectingSelectedConfigState extends HomeState {}
 
+final class ConnectingAutoManualConfigState extends HomeState {}
+ 
+
+/*
 final class RecivingConfigAdvancedAutoErrorState extends HomeState {}
 
 final class RecivingConfigAdvancedAutoSuccessState extends HomeState {}
+ */

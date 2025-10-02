@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vpn/screens/home/home_screen.dart';
 import 'package:vpn/services/nav_provider.dart'; // و کلاس Provider را
 
-enum ConnectionMode { manual, advancedAuto }
-
 class MySegmentedButton extends StatefulWidget {
-  const MySegmentedButton({super.key});
+  final ValueChanged<ConnectionMode>? onModeChanged;
+  const MySegmentedButton({super.key, this.onModeChanged});
 
   @override
   State<MySegmentedButton> createState() => _MySegmentedButtonState();
@@ -34,7 +34,7 @@ class _MySegmentedButtonState extends State<MySegmentedButton> {
         setState(() {
           selectedMode = newSelection.first;
         });
-
+        widget.onModeChanged?.call(selectedMode);
         if (newSelection.first == ConnectionMode.manual) {
           // *** این همان خطی است که شما می‌خواستید ***
           // به provider دسترسی پیدا کرده و درخواست تغییر تب را ارسال می‌کنیم

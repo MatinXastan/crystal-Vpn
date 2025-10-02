@@ -18,6 +18,7 @@ Future<void> main() async {
   Hive.registerAdapter(VpnModelAdapter());
   Hive.registerAdapter(ConfigTypeAdapter());
   await Hive.openBox<VpnModel>(Conf.configBox);
+
   await reciveConfigsRepo.reciveConfigAdvancedAuto();
 
   runApp(

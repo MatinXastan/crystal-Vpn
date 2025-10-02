@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 
 class Conf {
   Conf._();
-
+  static const String connectStatus = 'CONNECTED';
+  static const String disconnectStatus = 'DISCONNECTED';
   static const String configBox = 'config_box';
   static const String urlCheckLocation = 'https://ipleak.net/json/';
   static const String githubUser = 'MatinXastan';

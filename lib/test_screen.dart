@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
+
 import 'dart:developer';
 
-import 'package:vpn/configurations/conf.dart'; // For logging
+import 'package:flutter_v2ray_client/flutter_v2ray.dart';
+
+// For logging
 
 // لیست کانفیگ‌های شما
 // نکته: برخی از این کانفیگ‌ها ممکن است منقضی شده باشند یا به درستی توسط پکیج پارس نشوند.
 List<String> configs = [
-  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMyBWTUVTUyB8IEB2cG5mYWlsX3YycmF5IFsxNl0iLA0KICAiYWRkIjogImthbXBvbmcub3JnIiwNCiAgInBvcnQiOiAiNDQzIiwNCiAgImlkIjogIjAzZmNjNjE4LWI5M2QtNjc5Ni02YWVkLThhMzhjOTc1ZDU4MSIsDQogICJhaWQiOiAiMSIsDQogICJzY3kiOiAiYXV0byIsDQogICJuZXQiOiAid3MiLA0KICAidHlwZSI6ICJhdXRvIiwNCiAgImhvc3QiOiAia2FtcG9uZy5vcmciLA0KICAicGF0aCI6ICJsaW5rdndzIiwNCiAgInRscyI6ICJ0bHMiLA0KICAic25pIjogImthbXBvbmcub3JnIiwNCiAgImFscG4iOiAiIiwNCiAgImZwIjogIiINCn0=',
-  'vless://4981b98f-4943-4083-83aa-00b028f57a18@57.129.92.155:36626?encryption=none&security=none&type=grpc&authority=&serviceName=ZEDMODEON-ZEDMODEON-ZEDMODEON-bia-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON&mode=gun#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40orange_vpns%20%5B15%5D',
-  'vless://7a3d2e42-3823-4b00-9818-293f7c6742ca@zonex.de.zopli.ir:33667?encryption=none&flow=xtls-rprx-vision&security=reality&sni=store.steampowered.com&fp=firefox&pbk=urkddCRB1-01SWciigBk31sfccR6KZr4wX_BInUHu3o&sid=382874842551202c&type=tcp&headerType=none#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%92%20VLESS%20%7C%20%40ehsawn8%20%5B11%5D',
-  'vless://5fda29b6-0688-44e3-afdf-df533c800109@51.89.118.126:25369?encryption=none&security=none&type=grpc&authority=&serviceName=ZEDMODEON-ZEDMODEON-bia-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON&mode=gun#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40vpnv2raytop%20%5B2%5D',
-  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMiBWTUVTUyB8IEBmcmVlNGFsbHZwbiBbMTZdIiwNCiAgImFkZCI6ICJmYXBlbmcub3JnIiwNCiAgInBvcnQiOiAiNDQzIiwNCiAgImlkIjogIjAzZmNjNjE4LWI5M2QtNjc5Ni02YWVkLThhMzhjOTc1ZDU4MSIsDQogICJhaWQiOiAiMCIsDQogICJzY3kiOiAiYXV0byIsDQogICJuZXQiOiAid3MiLA0KICAidHlwZSI6ICItLS0iLA0KICAiaG9zdCI6ICJmYXBlbmcub3JnIiwNCiAgInBhdGgiOiAibGlua3Z3cyIsDQogICJ0bHMiOiAidGxzIiwNCiAgInNuaSI6ICJmYXBlbmcub3JnIiwNCiAgImFscG4iOiAiIiwNCiAgImZwIjogIiINCn0=',
-  'vless://234a4937-5029-4bcd-b32a-1eda5afc14f8@91.98.22.20:22933?encryption=none&security=none&type=tcp&headerType=http&host=speedtest.net#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40kingofilter%20%5B4%5D',
-  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMiBWTUVTUyB8IEBvdXRsaW5ldjJyYXluZyBbMTNdIiwNCiAgImFkZCI6ICJsYW1tYWxhbmQub3JnIiwNCiAgInBvcnQiOiAiNDQzIiwNCiAgImlkIjogIjAzZmNjNjE4LWI5M2QtNjc5Ni02YWVkLThhMzhjOTc1ZDU4MSIsDQogICJhaWQiOiAiMCIsDQogICJzY3kiOiAiYXV0byIsDQogICJuZXQiOiAid3MiLA0KICAidHlwZSI6ICItLS0iLA0KICAiaG9zdCI6ICJsYW1tYWxhbmQub3JnIiwNCiAgInBhdGgiOiAibGlua3Z3cyIsDQogICJ0bHMiOiAidGxzIiwNCiAgInNuaSI6ICJsYW1tYWxhbmQub3JnIiwNCiAgImFscG4iOiAiIiwNCiAgImZwIjogIiINCn0=',
-  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMyBWTUVTUyB8IEB2cG5mYWlsX3YycmF5IFsxNl0iLA0KICAiYWRkIjogImthbXBvbmcub3JnIiwNCiAgInBvcnQiOiAiNDQzIiwNCiAgImlkIjogIjAzZmNjNjE4LWI5M2QtNjc5Ni02YWVkLThhMzhjOTc1ZDU4MSIsDQogICJhaWQiOiAiMSIsDQogICJzY3kiOiAiYXV0byIsDQogICJuZXQiOiAid3MiLA0KICAidHlwZSI6ICJhdXRvIiwNCiAgImhvc3QiOiAia2FtcG9uZy5vcmciLA0KICAicGF0aCI6ICJsaW5rdndzIiwNCiAgInRscyI6ICJ0bHMiLA0KICAic25pIjogImthbXBvbmcub3JnIiwNCiAgImFscG4iOiAiIiwNCiAgImZwIjogIiINCn0=',
-  'vless://defb9686-1d5d-4919-a87f-c93b54b9c0d3@91.98.41.123:28260?encryption=none&security=none&type=tcp&headerType=none#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40v2rayng3%20%5B6%5D',
+  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMyBWTUVTUyB8IEB2MjIycmF5IFsxMF0iLA0KICAiYWRkIjogIjkxLjk5LjE4NS4yMTYiLA0KICAicG9ydCI6ICIyMDA4NiIsDQogICJpZCI6ICI3YmQ2YTFlYS1hMjIwLTRmMWMtYWZlZC02Y2ZiOGFiOTZhZDkiLA0KICAiYWlkIjogIjAiLA0KICAic2N5IjogImF1dG8iLA0KICAibmV0IjogIndzIiwNCiAgInR5cGUiOiAiLS0tIiwNCiAgImhvc3QiOiAiIiwNCiAgInBhdGgiOiAiLyIsDQogICJ0bHMiOiAiIiwNCiAgInNuaSI6ICIiLA0KICAiYWxwbiI6ICIiLA0KICAiZnAiOiAiIg0KfQ==',
+  'vless://df0680ca-e43c-498d-ed86-8e196eedd012@638938755008244100.vienna-drc-tusacaf.info:8880?encryption=none&security=none&type=grpc#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40v2aryng_vpn%20%5B8%5D',
+  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMyBWTUVTUyB8IEB2MnJheV9mcmVlX2NvbmYgWzddIiwNCiAgImFkZCI6ICI1Ny4xMjkuMjguMjEyIiwNCiAgInBvcnQiOiAiNDQzIiwNCiAgImlkIjogIjAzZmNjNjE4LWI5M2QtNjc5Ni02YWVkLThhMzhjOTc1ZDU4MSIsDQogICJhaWQiOiAiMCIsDQogICJzY3kiOiAiYXV0byIsDQogICJuZXQiOiAid3MiLA0KICAidHlwZSI6ICJhdXRvIiwNCiAgImhvc3QiOiAiZmFwZW5nLm9yZyIsDQogICJwYXRoIjogImxpbmt2d3MiLA0KICAidGxzIjogInRscyIsDQogICJzbmkiOiAiZmFwZW5nLm9yZyIsDQogICJhbHBuIjogIiIsDQogICJmcCI6ICIiDQp9',
+  'vless://df0680ca-e43c-498d-ed86-8e196eedd012@638943444955046930.birjand-drc-tusacaf.info:8880?encryption=none&security=none&type=grpc#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40flyv2ray%20%5B9%5D',
+  'vless://3940e9ba-d0f6-4052-bd8e-f3c2a2a76599@155.254.35.78:33811?encryption=none&security=reality&sni=miro.com&fp=chrome&pbk=fa3n6JDInXvPSrde2HYqogCf2YheiIgxhhO3N3gO1Qs&sid=63f811342e9c75&spx=%2F&type=grpc&authority=&serviceName=miro.com&mode=gun#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%92%20VLESS%20%7C%20%40v2ray1_ng%20%5B6%5D',
+  'vless://1b5f6283-4872-4048-bb9b-308bc305cb0c@91.98.22.20:22933?encryption=none&security=none&type=tcp&headerType=http&host=speedtest.net#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40kingofilter%20%5B1%5D',
+  'vless://3940e9ba-d0f6-4052-bd8e-f3c2a2a76599@155.254.35.78:33811?encryption=none&security=reality&sni=miro.com&fp=chrome&pbk=fa3n6JDInXvPSrde2HYqogCf2YheiIgxhhO3N3gO1Qs&sid=63f811342e9c75&spx=%2F&type=grpc&authority=&serviceName=miro.com&mode=gun#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%92%20VLESS%20%7C%20%40v2ray1_ng%20%5B6%5D',
+  'vless://5fda29b6-0688-44e3-afdf-df533c800109@51.89.118.126:25369?encryption=none&security=none&type=grpc&authority=&serviceName=ZEDMODEON-ZEDMODEON-bia-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON-ZEDMODEON&mode=gun#%F0%9F%87%A9%F0%9F%87%AA%20DE%20%7C%20%F0%9F%94%93%20VLESS%20%7C%20%40v2rayopen%20%5B3%5D',
+  'vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogIlx1RDgzQ1x1RERFOVx1RDgzQ1x1RERFQSBERSB8IFx1RDgzRFx1REQxMiBWTUVTUyB8IEB2MnJheTFfbmcgWzJdIiwNCiAgImFkZCI6ICJ5aWNodWVuZy5vcmciLA0KICAicG9ydCI6ICI0NDMiLA0KICAiaWQiOiAiMDNmY2M2MTgtYjkzZC02Nzk2LTZhZWQtOGEzOGM5NzVkNTgxIiwNCiAgImFpZCI6ICIwIiwNCiAgInNjeSI6ICJhdXRvIiwNCiAgIm5ldCI6ICJ3cyIsDQogICJ0eXBlIjogIi0tLSIsDQogICJob3N0IjogInlpY2h1ZW5nLm9yZyIsDQogICJwYXRoIjogImxpbmt2d3MiLA0KICAidGxzIjogInRscyIsDQogICJzbmkiOiAieWljaHVlbmcub3JnIiwNCiAgImFscG4iOiAiIiwNCiAgImZwIjogIiINCn0=',
 ];
 
 class TestScreen extends StatefulWidget {
@@ -27,7 +29,7 @@ class TestScreen extends StatefulWidget {
 
 class _TestScreenState extends State<TestScreen> {
   String _v2rayState = "DISCONNECTED";
-  late final FlutterV2ray _flutterV2ray;
+  late final V2ray _flutterV2ray;
 
   // برای نگهداری نتایج پینگ هر کانفیگ
   // Key: کانفیگ (URL), Value: پینگ (ms)
@@ -40,7 +42,7 @@ class _TestScreenState extends State<TestScreen> {
   @override
   void initState() {
     super.initState();
-    _flutterV2ray = FlutterV2ray(
+    _flutterV2ray = V2ray(
       onStatusChanged: (status) {
         setState(() {
           _v2rayState = status.state.toString().split('.').last;
@@ -156,7 +158,7 @@ class _TestScreenState extends State<TestScreen> {
   // تلاش برای پارس کردن کانفیگ بدون ایجاد خطا
   V2RayURL? _tryParse(String url) {
     try {
-      return FlutterV2ray.parseFromURL(url);
+      return V2ray.parseFromURL(url);
     } catch (e) {
       return null;
     }
@@ -199,10 +201,12 @@ class _TestScreenState extends State<TestScreen> {
       }
 
       try {
-        final delay = await _flutterV2ray.getServerDelay(
-          config: parser.getFullConfiguration(),
-          url: Conf.urlTestPing,
-        );
+        final delay = await _flutterV2ray
+            .getServerDelay(config: parser.getFullConfiguration())
+            .timeout(
+              const Duration(seconds: 7),
+              onTimeout: () => -1, // مقدار پیش‌فرض در صورت تایم‌اوت
+            );
         setState(() {
           _pingResults[config] = delay;
         });

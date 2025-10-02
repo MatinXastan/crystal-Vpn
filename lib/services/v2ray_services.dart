@@ -1,25 +1,14 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
+import 'package:flutter_v2ray_client/flutter_v2ray.dart';
+import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/screens/configVpnScreen/protocol_screen.dart';
 
 // کلاس سرویس ما که از ChangeNotifier ارث‌بری می‌کند تا بتواند به UI اطلاع‌رسانی کند
 class V2rayService with ChangeNotifier {
   // سازنده کلاس عمومی شده و دیگر خصوصی نیست
-  V2rayService() {
-    // مقداردهی اولیه در سازنده انجام می‌شود
-    flutterV2ray = FlutterV2ray(
-      onStatusChanged: (status) {
-        v2rayState = status.state.toString().split('.').last;
-        log('V2Ray status: ${v2rayState}');
-        notifyListeners(); // به ویجت‌ها اطلاع بده که وضعیت عوض شده
-      },
-    );
-  }
-
-  late final FlutterV2ray flutterV2ray;
 
   // --- متغیرهای وضعیت ---
   int status = 0;
@@ -30,7 +19,7 @@ class V2rayService with ChangeNotifier {
   int _pingedCount = 0;
   List<ConfigModel> _displayConfigs = [];
   DateTime? _lastPingTime;
-  List<ConfigModel> _autoAdvancedConfigs = [];
+  //ConfigAdvancedModel _autoAdvancedConfigs = [] as ConfigAdvancedModel;
 
   // --- Getter ها برای دسترسی امن به متغیرها از بیرون ---
   bool get isPingingAll => _isPingingAll;
@@ -40,11 +29,11 @@ class V2rayService with ChangeNotifier {
   ConfigModel? get selectedConfig => _selectedConfig;
   Map<String, int> get pingResults => _pingResults;
   DateTime? get lastPingTime => _lastPingTime;
-  List<ConfigModel> get getAutoAdvancedConfigs => _autoAdvancedConfigs;
+  // ConfigAdvancedModel get getAutoAdvancedConfigs => _autoAdvancedConfigs;
   String get statuseVpn => v2rayState;
   int get statusConnection => status;
   // متد برای مقداردهی اولیه لیست کانفیگ‌ها
-  void initializeConfigs(List<ConfigModel> configs) {
+  /*  void initializeConfigs(List<ConfigModel> configs) {
     _displayConfigs = List.from(configs);
     _pingResults.clear();
     for (var configModel in configs) {
@@ -52,13 +41,49 @@ class V2rayService with ChangeNotifier {
     }
     // به UI اطلاع می‌دهیم که لیست اولیه آماده است (اختیاری)
     notifyListeners();
+  } */
+  void setStatus(int currentStatus) {
+    status = currentStatus;
+    notifyListeners();
   }
 
-  void selectConfig(ConfigModel? config) {
+  void setV2rayState(String currentV2rayState) {
+    v2rayState = currentV2rayState;
+    notifyListeners();
+  }
+
+  void setSelectConfig(ConfigModel? config) {
     _selectedConfig = config;
     notifyListeners();
   }
 
+  void setIsPingingAll(bool isPingAll) {
+    _isPingingAll = isPingAll;
+    notifyListeners();
+  }
+
+  void stopPinging() {
+    _isPingingAll = false;
+    status = 0;
+    notifyListeners();
+  }
+
+  void setLastPingTime(DateTime time) {
+    _lastPingTime = time;
+    notifyListeners();
+  }
+
+  void setDisplayConfigs(List<ConfigModel> newDisplayConfigs) {
+    _displayConfigs = newDisplayConfigs;
+    notifyListeners();
+  }
+  /* 
+  void setAdvancedAutoConfigs(ConfigAdvancedModel newDisplayConfigs) {
+    _autoAdvancedConfigs = newDisplayConfigs;
+    notifyListeners();
+  } */
+
+  /* 
   // --- منطق اصلی برنامه ---
   Future<void> getAllPings() async {
     if (_isPingingAll) return;
@@ -72,7 +97,7 @@ class V2rayService with ChangeNotifier {
     notifyListeners(); // اطلاع به UI که پینگ شروع شده
 
     try {
-      await flutterV2ray.initializeV2Ray();
+      await flutterV2ray.initialize();
     } catch (e) {
       log('Failed to initialize V2Ray: $e');
       _isPingingAll = false;
@@ -123,11 +148,7 @@ class V2rayService with ChangeNotifier {
     notifyListeners(); // به UI اطلاع می‌دهیم که مرتب‌سازی تمام شده
   }
 
-  void stopPinging() {
-    _isPingingAll = false;
-    status = 0;
-    notifyListeners();
-  }
+  
 
   // متدهای کمکی دیگر مثل _getSinglePingByConnecting و _tryParse
   // این متدها خصوصی باقی می‌مانند و از بیرون قابل دسترسی نیستند
@@ -178,7 +199,7 @@ class V2rayService with ChangeNotifier {
 
   V2RayURL? _tryParse(String url) {
     try {
-      return FlutterV2ray.parseFromURL(url);
+      return V2ray.parseFromURL(url);
     } catch (e) {
       log('Could not parse URL: $url. Error: $e');
       return null;
@@ -271,4 +292,5 @@ class V2rayService with ChangeNotifier {
       notifyListeners();
     }
   }
+ */
 }
