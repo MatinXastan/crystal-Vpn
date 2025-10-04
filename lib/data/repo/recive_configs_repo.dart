@@ -15,13 +15,13 @@ class ReciveConfigsRepo implements IReciveConfigsRepo {
 
   ReciveConfigsRepo({required this.dataSrc});
 
-  final ValueNotifier<ConfigAdvancedModel> configsAdvancedAutoNotifier =
+  /* final ValueNotifier<ConfigAdvancedModel> configsAdvancedAutoNotifier =
       ValueNotifier<ConfigAdvancedModel>(
         ConfigAdvancedModel(
           configs: [],
           whenFetched: DateTime.now().subtract(Duration(days: 1)),
         ),
-      );
+      ); */
   @override
   Future<List<String>> futureConfigs(String fileName) {
     return dataSrc.futureConfigs(fileName);
@@ -31,18 +31,18 @@ class ReciveConfigsRepo implements IReciveConfigsRepo {
   Future<List<ConfigModel>> reciveConfigAdvancedAuto() async {
     final models = await dataSrc.reciveConfigAdvancedAuto();
 
-    configsAdvancedAutoNotifier.value = ConfigAdvancedModel(
+    /* configsAdvancedAutoNotifier.value = ConfigAdvancedModel(
       configs: models,
       whenFetched: DateTime.now(),
-    );
+    ); */
 
     return models;
   }
 
   // متد کمکی برای پاک‌سازی Listenerها (صدا زدن از بیرون در dispose)
-  void dispose() {
+  /* void dispose() {
     configsAdvancedAutoNotifier.dispose();
-  }
+  } */
 }
 
 final reciveConfigsRepo = ReciveConfigsRepo(

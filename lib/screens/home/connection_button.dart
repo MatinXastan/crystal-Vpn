@@ -8,7 +8,6 @@ import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/screens/home/bloc/home_bloc.dart';
 import 'package:vpn/screens/home/custom_segmented_button.dart';
 import 'package:vpn/screens/home/home_screen.dart';
 import 'package:vpn/services/nav_provider.dart';
@@ -21,12 +20,12 @@ final double sizePaddingLeft = 10;
 class ConnectButton extends StatefulWidget {
   // وضعیت دکمه از بیرون (از طریق HomeScreen) مشخص می‌شود
   int status;
-  final ConnectionMode connectionMode;
+  /* final ConnectionMode connectionMode; */
 
   ConnectButton({
     super.key,
     required this.status,
-    required this.connectionMode,
+    /*  required this.connectionMode, */
   });
 
   @override
@@ -90,29 +89,33 @@ class _ConnectButtonState extends State<ConnectButton> {
     super.initState();
     // در ابتدا، وضعیت نمایشی را با وضعیت ورودی یکی می‌کنیم
     v2rayService = context.read<V2rayService>();
-    advancedAutoConfigs = context
+    /* advancedAutoConfigs = context
         .read<ReciveConfigsRepo>()
         .configsAdvancedAutoNotifier
-        .value;
+        .value; */
     _displayStatus = widget.status;
     connectV2ray = V2ray(
       onStatusChanged: (status) {
         if (mounted) {
+          //TODO: باید اینجاها ببینم کار میکنه یعنی درست منتقل
           if (status.state == Conf.connectStatus) {
             v2rayService.setV2rayState(Conf.connectStatus);
-            setState(() {
+            /* setState(() {
               widget.status = 2;
-            });
+            }); */
+            v2rayService.setStatus(2);
           } else if (status.state == Conf.disconnectStatus) {
             v2rayService.setV2rayState(Conf.disconnectStatus);
-            setState(() {
+            /* setState(() {
               widget.status = 0;
-            });
+            }); */
+
+            v2rayService.setStatus(2);
           }
         }
       },
     );
-    _initializeConfigs();
+    //_initializeConfigs();
   }
 
   @override
@@ -140,8 +143,10 @@ class _ConnectButtonState extends State<ConnectButton> {
 
   // متد برای مدیریت کلیک روی دکمه
   Future<void> _handleTap() async {
-    // اگر در حال اتصال بود (وضعیت ۱)، کاری انجام نده
     if (widget.status == 1) {
+      /* if (widget.connectionMode == ConnectionMode.advancedAuto) {
+        stopPinging();
+      } */
       return;
     }
 
@@ -152,11 +157,11 @@ class _ConnectButtonState extends State<ConnectButton> {
         /*  context.read<HomeBloc>().add(
           ConnectToVpnEvent(selectedMode: widget.connectionMode),
         ); */
-        await _connectAutoToVpn(selectedMode: widget.connectionMode);
+        await _connectAutoToVpn();
 
         break;
       case 3: // خطا
-        await _connectAutoToVpn(selectedMode: widget.connectionMode);
+        await _connectAutoToVpn();
         break;
       case 2: // وصل
         //v2rayService.disconnect();
@@ -197,11 +202,11 @@ class _ConnectButtonState extends State<ConnectButton> {
     );
   }
 
-  Future<void> _connectAutoToVpn({required ConnectionMode selectedMode}) async {
-    if (selectedMode == ConnectionMode.advancedAuto) {
+  Future<void> _connectAutoToVpn(
+    /* {required ConnectionMode selectedMode} */
+  ) async {
+    /* if (selectedMode == ConnectionMode.advancedAuto) {
       if (advancedAutoConfigs.configs.length > 1) {
-        //TODO: بایدم باشه اینجا باید یه شر بزارم  که اگه بالای 6 ساعت از آخرین دریافت کانفیگ ها میگذره هشدار بدم
-
         final DateTime now = DateTime.now();
         final diffrence = now.difference(
           lastPingForAdvancedAutoConfigs ??
@@ -210,6 +215,8 @@ class _ConnectButtonState extends State<ConnectButton> {
 
         if (diffrence.inHours >= 6) {
           await _getAllPings(advancedAutoConfigs.configs);
+
+          await _connectToVpn(advancedAutoConfigs.configs.first);
         } else {
           await _connectToVpn(advancedAutoConfigs.configs.first);
         }
@@ -222,31 +229,31 @@ class _ConnectButtonState extends State<ConnectButton> {
           ),
         );
       }
-    } else if (selectedMode == ConnectionMode.manual) {
-      if (v2rayService.selectedConfig == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("یک کانفیگ را در لیست انتخاب کنید ")),
-        );
+    } else if (selectedMode == ConnectionMode.manual) { */
+    if (v2rayService.selectedConfig == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("یک کانفیگ را در لیست انتخاب کنید ")),
+      );
 
-        Provider.of<NavigationProvider>(
-          context,
-          listen: false,
-        ).changeTab(BtmNavScreenIndex.config);
-      } else if (v2rayService.selectedConfig != null) {
-        await _connectToVpn(
-          v2rayService.selectedConfig ?? ConfigModel(config: '', delay: -1),
-        );
-      }
+      Provider.of<NavigationProvider>(
+        context,
+        listen: false,
+      ).changeTab(BtmNavScreenIndex.config);
+    } else if (v2rayService.selectedConfig != null) {
+      await _connectToVpn(
+        v2rayService.selectedConfig ?? ConfigModel(config: '', delay: -1),
+      );
     }
+    /* } */
   }
 
-  void _initializeConfigs() {
+  /*  void _initializeConfigs() {
     //advancedAutoConfigs = List.from(configs);
     _pingResults.clear();
     for (var configModel in advancedAutoConfigs.configs) {
       _pingResults[configModel.config] = 0;
     }
-  }
+  } */
 
   //for advanced config
   Future<void> _getAllPings(List<ConfigModel> config) async {
@@ -256,7 +263,7 @@ class _ConnectButtonState extends State<ConnectButton> {
     v2rayService.setStatus(1);
 
     setState(() {
-      widget.status = 1;
+      //widget.status = 1;
       _pingResults.updateAll((key, value) => 0);
     });
 
@@ -266,6 +273,7 @@ class _ConnectButtonState extends State<ConnectButton> {
       log('Failed to initialize V2Ray for pinging: $e');
       if (mounted) {
         setState(() => _isPingingAll = false);
+        v2rayService.setStatus(3);
       }
       return;
     }
@@ -333,7 +341,8 @@ class _ConnectButtonState extends State<ConnectButton> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("The selected config is invalid.")),
       );
-      if (mounted) setState(() => widget.status = 3);
+      if (mounted) v2rayService.setStatus(3);
+      ;
       return;
     }
 
@@ -345,12 +354,16 @@ class _ConnectButtonState extends State<ConnectButton> {
           proxyOnly: false,
         );
       }
+      v2rayService.setStatus(2);
+      v2rayService.setV2rayState(Conf.connectStatus);
     } catch (e) {
       log("Error starting V2Ray: $e");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Error starting V2Ray: $e")));
-      if (mounted) setState(() => widget.status = 3);
+      if (mounted) v2rayService.setStatus(3);
+
+      /* setState(() => widget.status = 3) */
     }
   }
 
@@ -375,14 +388,25 @@ class _ConnectButtonState extends State<ConnectButton> {
   }
 
   Future<void> _disconnect() async {
-    if (v2rayService.v2rayState != 'DISCONNECTED') {
+    if (v2rayService.v2rayState == Conf.connectStatus) {
       try {
         await connectV2ray.stopV2Ray();
         v2rayService.setSelectConfig(null);
+        v2rayService.setStatus(0);
+        v2rayService.setV2rayState(Conf.disconnectStatus);
       } catch (e) {
         log('Error disconnecting from V2Ray: $e');
         if (mounted) v2rayService.setStatus(3);
       }
+    }
+  }
+
+  void stopPinging() {
+    if (mounted) {
+      v2rayService.setIsPingingAll(false);
+      v2rayService.setStatus(0);
+      v2rayService.setLastPingTime(DateTime.now());
+      setState(() => _isPingingAll = false);
     }
   }
 }

@@ -2,12 +2,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 import 'package:provider/provider.dart';
+import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
 import '../../gen/assets.gen.dart';
 
+//در اینجا نیازی نیست همه کانفیگ ها رو به وی تو ری سرویس انتقال بدیم بلکه فقط کانفیگ انتخاب شده لازم است
 class ProtocolScreen extends StatefulWidget {
   final List<ConfigModel> configs;
   final String protocolType;
@@ -129,6 +131,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
       final delay = await flutterV2ray
           .getServerDelay(
             config: parser.getFullConfiguration(),
+            /* url: Conf.urlTestPing, */
           ) // <-- این خط اصلاح شد
           .timeout(const Duration(seconds: 10), onTimeout: () => -1);
       return configModel.copyWith(delay: delay);
@@ -338,11 +341,12 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
 
             if (_displayConfigs.isNotEmpty) {
               final ConfigModel bestPing = _displayConfigs.first;
+              selectConfig(bestPing);
               // await connect(bestPing);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('بهرترین کانفیگ انتخاب شد'),
-                  backgroundColor: Colors.orangeAccent,
+                  backgroundColor: Color.fromARGB(255, 56, 255, 1),
                 ),
               );
               context.read<NavigationProvider>().changeTab(

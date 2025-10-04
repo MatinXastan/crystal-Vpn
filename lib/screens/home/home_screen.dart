@@ -5,7 +5,6 @@ import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/screens/home/bloc/home_bloc.dart';
 import 'package:vpn/screens/home/connection_button.dart';
 import 'package:vpn/screens/home/custom_segmented_button.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
@@ -22,22 +21,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late V2rayService v2rayService;
-  late ConfigAdvancedModel advancedAutoConfigs;
-  late ReciveConfigsRepo reciveConfigsRepository; // Define repo instance
+  //late V2rayService v2rayService;
+  //late ConfigAdvancedModel advancedAutoConfigs;
+  //late ReciveConfigsRepo reciveConfigsRepository; // Define repo instance
   String statuseConnect = "DISCONNECTED";
-  ConnectionMode currentMode = ConnectionMode.advancedAuto;
+  //ConnectionMode currentMode = ConnectionMode.advancedAuto;
   @override
   void initState() {
     super.initState();
     // It's generally safer to access providers in didChangeDependencies or build,
     // but read() in initState is acceptable.
-    v2rayService = context.read<V2rayService>();
-    reciveConfigsRepository = reciveConfigsRepo;
+    //v2rayService = context.read<V2rayService>();
+    /* reciveConfigsRepository = reciveConfigsRepo;
     advancedAutoConfigs = context
         .read<ReciveConfigsRepo>()
         .configsAdvancedAutoNotifier
-        .value;
+        .value; */
     statuseConnect = context.read<V2rayService>().statuseVpn;
   }
 
@@ -59,10 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   spacing: 24,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ConnectButton(
-                      status: value.statusConnection,
-                      connectionMode: currentMode,
-                    ),
+                    ConnectButton(status: value.statusConnection),
                     GlassBox(
                       width: size.width / 1.1,
                       height: size.height / 4,
@@ -73,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            Positioned(
+            /*  Positioned(
               right: 12,
               top: 12,
               child: MySegmentedButton(
@@ -83,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-            ),
+            ), */
           ],
         ),
       ),

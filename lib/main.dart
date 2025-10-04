@@ -19,14 +19,13 @@ Future<void> main() async {
   Hive.registerAdapter(ConfigTypeAdapter());
   await Hive.openBox<VpnModel>(Conf.configBox);
 
-  await reciveConfigsRepo.reciveConfigAdvancedAuto();
+  //await reciveConfigsRepo.reciveConfigAdvancedAuto();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => V2rayService()),
-        // FIX: Provide the ReciveConfigsRepo instance itself, not just its notifier.
-        Provider<ReciveConfigsRepo>(create: (context) => reciveConfigsRepo),
+        //Provider<ReciveConfigsRepo>(create: (context) => reciveConfigsRepo),
         ChangeNotifierProvider(create: (context) => NavigationProvider()),
       ],
       child: const MyApp(),
