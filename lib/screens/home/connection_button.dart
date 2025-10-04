@@ -391,7 +391,7 @@ class _ConnectButtonState extends State<ConnectButton> {
     if (v2rayService.v2rayState == Conf.connectStatus) {
       try {
         await connectV2ray.stopV2Ray();
-        v2rayService.setSelectConfig(null);
+
         v2rayService.setStatus(0);
         v2rayService.setV2rayState(Conf.disconnectStatus);
       } catch (e) {

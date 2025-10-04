@@ -72,6 +72,8 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
 
   void selectConfig(ConfigModel? config) {
     v2rayService.setSelectConfig(config);
+
+    v2rayService.setSelectedRemark(config);
     setState(() {
       _selectedConfig = config;
     });
@@ -270,7 +272,6 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
                             isSelected:
                                 _selectedConfig?.config == configItem.config,
                             onTap: () async {
-                              //TODO باید مطمین بشم درست کار میکنه
                               selectConfig(configItem);
                               //await connect(configItem);
                               /* if (v2rayState == 'CONNECTING' ||

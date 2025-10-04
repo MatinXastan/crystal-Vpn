@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
@@ -29,14 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // It's generally safer to access providers in didChangeDependencies or build,
-    // but read() in initState is acceptable.
-    //v2rayService = context.read<V2rayService>();
-    /* reciveConfigsRepository = reciveConfigsRepo;
-    advancedAutoConfigs = context
-        .read<ReciveConfigsRepo>()
-        .configsAdvancedAutoNotifier
-        .value; */
+
     statuseConnect = context.read<V2rayService>().statuseVpn;
   }
 
@@ -54,16 +48,105 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Center(
               child: Consumer<V2rayService>(
-                builder: (context, value, child) => Column(
-                  spacing: 24,
+                builder: (context, service, child) => Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ConnectButton(status: value.statusConnection),
+                    SizedBox(height: 28),
                     GlassBox(
                       width: size.width / 1.1,
-                      height: size.height / 4,
+                      height: size.height / 8,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("selected server"),
+                            SizedBox(height: 8),
+                            Container(
+                              width: size.width / 1.1,
+                              height: size.height / 16,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  12,
+                                ), // گردی گوشه‌ها
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white.withOpacity(0.2),
+                                    Colors.white.withOpacity(0.05),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                      0.2,
+                                    ), // رنگ سایه
+                                    spreadRadius: 2, // پخش شدن سایه
+                                    blurRadius: 6, // میزان محو بودن
+                                    offset: Offset(2, 3), // جابجایی سایه (x, y)
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // گروه اول: آیکون و متن کنار هم
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          color:
+                                              service.v2rayState ==
+                                                  Conf.connectStatus
+                                              ? Colors.green
+                                              : Colors.blue,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            service.selectedRemark ??
+                                                "select A config",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    // ویجت سوم در انتها
+                                    Icon(
+                                      Icons.circle,
+                                      color:
+                                          service.v2rayState ==
+                                              Conf.connectStatus
+                                          ? Colors.green
+                                          : Colors.blue,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 32),
+                    ConnectButton(status: service.statusConnection),
+                    SizedBox(height: 32),
+                    GlassBox(
+                      width: size.width / 1.1,
+                      height: size.height / 3.5,
                       child: Row(),
                     ),
+                    Expanded(child: SizedBox()),
                   ],
                 ),
               ),

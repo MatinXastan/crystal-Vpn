@@ -19,6 +19,7 @@ class V2rayService with ChangeNotifier {
   int _pingedCount = 0;
   List<ConfigModel> _displayConfigs = [];
   DateTime? _lastPingTime;
+  String? _selectedRemark;
   //ConfigAdvancedModel _autoAdvancedConfigs = [] as ConfigAdvancedModel;
 
   // --- Getter ها برای دسترسی امن به متغیرها از بیرون ---
@@ -32,6 +33,8 @@ class V2rayService with ChangeNotifier {
   // ConfigAdvancedModel get getAutoAdvancedConfigs => _autoAdvancedConfigs;
   String get statuseVpn => v2rayState;
   int get statusConnection => status;
+
+  String? get selectedRemark => _selectedRemark;
   // متد برای مقداردهی اولیه لیست کانفیگ‌ها
   /*  void initializeConfigs(List<ConfigModel> configs) {
     _displayConfigs = List.from(configs);
@@ -57,6 +60,15 @@ class V2rayService with ChangeNotifier {
     notifyListeners();
   }
 
+  void setSelectedRemark(ConfigModel? config) {
+    ConfigModel? configModel = config;
+    if (configModel != null) {
+      var currentRemark = _tryParse(configModel.config)?.remark;
+      _selectedRemark = currentRemark;
+      notifyListeners();
+    }
+  }
+
   void setIsPingingAll(bool isPingAll) {
     _isPingingAll = isPingAll;
     notifyListeners();
@@ -76,6 +88,14 @@ class V2rayService with ChangeNotifier {
   void setDisplayConfigs(List<ConfigModel> newDisplayConfigs) {
     _displayConfigs = newDisplayConfigs;
     notifyListeners();
+  }
+
+  V2RayURL? _tryParse(String url) {
+    try {
+      return V2ray.parseFromURL(url);
+    } catch (e) {
+      return null;
+    }
   }
   /* 
   void setAdvancedAutoConfigs(ConfigAdvancedModel newDisplayConfigs) {
