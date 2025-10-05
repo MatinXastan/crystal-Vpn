@@ -63,74 +63,86 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text("selected server"),
                             SizedBox(height: 8),
-                            Container(
-                              width: size.width / 1.1,
-                              height: size.height / 16,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(
-                                  12,
-                                ), // گردی گوشه‌ها
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.white.withOpacity(0.2),
-                                    Colors.white.withOpacity(0.05),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(
-                                      0.2,
-                                    ), // رنگ سایه
-                                    spreadRadius: 2, // پخش شدن سایه
-                                    blurRadius: 6, // میزان محو بودن
-                                    offset: Offset(2, 3), // جابجایی سایه (x, y)
+                            GestureDetector(
+                              onTap: () {
+                                Provider.of<NavigationProvider>(
+                                  context,
+                                  listen: false,
+                                ).changeTab(BtmNavScreenIndex.config);
+                              },
+                              child: Container(
+                                width: size.width / 1.1,
+                                height: size.height / 16,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    12,
+                                  ), // گردی گوشه‌ها
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withOpacity(0.2),
+                                      Colors.white.withOpacity(0.05),
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
                                   ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    // گروه اول: آیکون و متن کنار هم
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.arrow_drop_down,
-                                          color:
-                                              service.v2rayState ==
-                                                  Conf.connectStatus
-                                              ? Colors.green
-                                              : Colors.blue,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Flexible(
-                                          child: Text(
-                                            service.selectedRemark ??
-                                                "select A config",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    // ویجت سوم در انتها
-                                    Icon(
-                                      Icons.circle,
-                                      color:
-                                          service.v2rayState ==
-                                              Conf.connectStatus
-                                          ? Colors.green
-                                          : Colors.blue,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(
+                                        0.2,
+                                      ), // رنگ سایه
+                                      spreadRadius: 2, // پخش شدن سایه
+                                      blurRadius: 6, // میزان محو بودن
+                                      offset: Offset(
+                                        2,
+                                        3,
+                                      ), // جابجایی سایه (x, y)
                                     ),
                                   ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // گروه اول: آیکون و متن کنار هم
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_drop_down,
+                                            color:
+                                                service.v2rayState ==
+                                                    Conf.connectStatus
+                                                ? Colors.green
+                                                : Colors.blue,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              service.selectedRemark ??
+                                                  "select A config",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // ویجت سوم در انتها
+                                      Icon(
+                                        Icons.circle,
+                                        color:
+                                            service.v2rayState ==
+                                                Conf.connectStatus
+                                            ? Colors.green
+                                            : Colors.blue,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
