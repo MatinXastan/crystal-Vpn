@@ -255,69 +255,6 @@ class _ConnectButtonState extends State<ConnectButton> {
     }
   } */
 
-  //for advanced config
-  Future<void> _getAllPings(List<ConfigModel> config) async {
-    if (widget.status == 1) return;
-
-    v2rayService.setIsPingingAll(true);
-    v2rayService.setStatus(1);
-
-    setState(() {
-      //widget.status = 1;
-      _pingResults.updateAll((key, value) => 0);
-    });
-
-    try {
-      await connectV2ray.initialize();
-    } catch (e) {
-      log('Failed to initialize V2Ray for pinging: $e');
-      if (mounted) {
-        setState(() => _isPingingAll = false);
-        v2rayService.setStatus(3);
-      }
-      return;
-    }
-
-    //final configsToPing = List<ConfigModel>.from(advancedAutoConfigs.configs);
-    final configsToPing = List<ConfigModel>.from(config);
-    for (final configModel in configsToPing) {
-      if (widget.status == 1) break;
-
-      if (mounted) {
-        setState(() => _pingResults[configModel.config] = -3);
-      }
-
-      final result = await _getSinglePing(configModel);
-
-      if (mounted) {
-        setState(() {
-          _pingResults[result.config] = result.delay;
-        });
-      }
-    }
-    _sortConfigsByPing();
-  }
-
-  Future _getSinglePing(ConfigModel configModel) async {
-    final parser = _tryParse(configModel.config);
-    if (parser == null) {
-      return configModel.copyWith(delay: -2); // کانفیگ نامعتبر
-    }
-    try {
-      // *** نکته کلیدی اینجاست ***
-      // ما باید کانفیگ کامل را به متد بدهیم، نه لینک خام را
-      final delay = await connectV2ray
-          .getServerDelay(
-            config: parser.getFullConfiguration(),
-          ) // <-- این خط اصلاح شد
-          .timeout(const Duration(seconds: 10), onTimeout: () => -1);
-      return configModel.copyWith(delay: delay);
-    } catch (e) {
-      log("Error getting ping for ${parser.remark}: $e");
-      return configModel.copyWith(delay: -1); // خطا در پینگ
-    }
-  }
-
   V2RayURL? _tryParse(String url) {
     try {
       return V2ray.parseFromURL(url);
@@ -351,7 +288,7 @@ class _ConnectButtonState extends State<ConnectButton> {
         await connectV2ray.startV2Ray(
           remark: parser.remark,
           config: parser.getFullConfiguration(),
-          proxyOnly: false,
+          proxyOnly: true,
         );
       }
       v2rayService.setStatus(2);
@@ -364,26 +301,6 @@ class _ConnectButtonState extends State<ConnectButton> {
       if (mounted) v2rayService.setStatus(3);
 
       /* setState(() => widget.status = 3) */
-    }
-  }
-
-  void _sortConfigsByPing() {
-    advancedAutoConfigs.configs.sort((a, b) {
-      final int pingA = _pingResults[a.config] ?? -1;
-      final int pingB = _pingResults[b.config] ?? -1;
-      if (pingA > 0 && pingB <= 0) return -1;
-      if (pingB > 0 && pingA <= 0) return 1;
-      if (pingA > 0 && pingB > 0) return pingA.compareTo(pingB);
-      return 0;
-    });
-    v2rayService.setIsPingingAll(false);
-    v2rayService.setStatus(0);
-
-    if (mounted) {
-      setState(() {
-        _isPingingAll = false;
-        lastPingForAdvancedAutoConfigs = DateTime.now();
-      });
     }
   }
 
@@ -407,6 +324,16 @@ class _ConnectButtonState extends State<ConnectButton> {
       v2rayService.setStatus(0);
       v2rayService.setLastPingTime(DateTime.now());
       setState(() => _isPingingAll = false);
+    }
+  }
+
+  Future<int> getconnectedping() async {
+    try {
+      final delay = await connectV2ray.getConnectedServerDelay();
+
+      return delay;
+    } catch (e) {
+      return -1;
     }
   }
 }

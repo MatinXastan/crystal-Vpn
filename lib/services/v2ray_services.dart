@@ -1,10 +1,7 @@
-import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
-import 'package:vpn/data/model/config_advanced_model.dart';
+
 import 'package:vpn/data/model/config_model.dart';
-import 'package:vpn/screens/configVpnScreen/protocol_screen.dart';
 
 // کلاس سرویس ما که از ChangeNotifier ارث‌بری می‌کند تا بتواند به UI اطلاع‌رسانی کند
 class V2rayService with ChangeNotifier {
@@ -20,6 +17,7 @@ class V2rayService with ChangeNotifier {
   List<ConfigModel> _displayConfigs = [];
   DateTime? _lastPingTime;
   String? _selectedRemark;
+  V2RayStatus _v2rayStatus = V2RayStatus();
   //ConfigAdvancedModel _autoAdvancedConfigs = [] as ConfigAdvancedModel;
 
   // --- Getter ها برای دسترسی امن به متغیرها از بیرون ---
@@ -33,6 +31,7 @@ class V2rayService with ChangeNotifier {
   // ConfigAdvancedModel get getAutoAdvancedConfigs => _autoAdvancedConfigs;
   String get statuseVpn => v2rayState;
   int get statusConnection => status;
+  V2RayStatus get v2rayStatus => _v2rayStatus;
 
   String? get selectedRemark => _selectedRemark;
   // متد برای مقداردهی اولیه لیست کانفیگ‌ها
@@ -47,6 +46,12 @@ class V2rayService with ChangeNotifier {
   } */
   void setStatus(int currentStatus) {
     status = currentStatus;
+    notifyListeners();
+  }
+
+  void updateV2rayStatus(V2RayStatus v2Status) {
+    print("status is : $v2Status");
+    _v2rayStatus = v2Status;
     notifyListeners();
   }
 
