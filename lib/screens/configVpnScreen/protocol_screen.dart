@@ -171,56 +171,6 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
     }
   }
 
-  /*  //TODO: باید درستش کنم جاش اینجا نیست
-  Future<void> connect(ConfigModel config) async {
-    //TODO: اینو باید در سرویس بخونه
-    if (v2rayState == 'CONNECTED' || v2rayState == 'CONNECTING') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Already connected or connecting.")),
-      );
-      return;
-    }
-
-    selectConfig(config);
-
-    final parser = _tryParse(config.config);
-    if (parser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("The selected config is invalid.")),
-      );
-      if (mounted) setState(() => v2rayState = "ERROR");
-      return;
-    }
-
-    try {
-      if (await flutterV2ray.requestPermission()) {
-        await flutterV2ray.startV2Ray(
-          remark: parser.remark,
-          config: parser.getFullConfiguration(),
-          proxyOnly: false,
-        );
-      }
-    } catch (e) {
-      log("Error starting V2Ray: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error starting V2Ray: $e")));
-      if (mounted) setState(() => v2rayState = "ERROR");
-    }
-  } */
-
-  /*  Future<void> disconnect() async {
-    if (v2rayState != 'DISCONNECTED') {
-      try {
-        await flutterV2ray.stopV2Ray();
-        selectConfig(null);
-      } catch (e) {
-        log('Error disconnecting from V2Ray: $e');
-        if (mounted) setState(() => v2rayState = "ERROR");
-      }
-    }
-  } */
-
   V2RayURL? _tryParse(String url) {
     try {
       return V2ray.parseFromURL(url);
@@ -273,7 +223,6 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
                                 _selectedConfig?.config == configItem.config,
                             onTap: () async {
                               selectConfig(configItem);
-                              //await connect(configItem);
                               /* if (v2rayState == 'CONNECTING' ||
                                   v2rayState == 'CONNECTED') {
                                 context.read<NavigationProvider>().changeTab(
@@ -343,10 +292,9 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
             if (_displayConfigs.isNotEmpty) {
               final ConfigModel bestPing = _displayConfigs.first;
               selectConfig(bestPing);
-              // await connect(bestPing);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('بهرترین کانفیگ انتخاب شد'),
+                  content: Text('بهترین کانفیگ انتخاب شد'),
                   backgroundColor: Color.fromARGB(255, 56, 255, 1),
                 ),
               );
@@ -412,7 +360,9 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                "$_pingedCount/$totalConfigs",
+                "Stop",
+                /* 
+                "$_pingedCount/$totalConfigs", */
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -432,9 +382,20 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
         borderRadius: BorderRadius.all(Radius.circular(18)),
         color: Color.fromARGB(255, 2, 255, 196),
       ),
-      child: IconButton(
-        onPressed: () => getAllPings(),
-        icon: const Icon(Icons.speed_rounded, size: 36, color: Colors.black),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () => getAllPings(),
+            child: const Icon(
+              Icons.speed_rounded,
+              size: 36,
+              color: Colors.black,
+            ),
+          ),
+          Text('Start'),
+        ],
       ),
     );
   }
@@ -457,6 +418,27 @@ class V2rayConfigBox extends StatelessWidget {
   final String configs;
   final Function() onTap;
   final bool isSelected;
+
+  /// تابع کمکی برای استخراج امن نام کانفیگ (remark)
+  /// این تابع از کرش کردن برنامه به دلیل وجود کاراکترهای نامعتبر در نام کانفیگ جلوگیری می‌کند
+  String _getSafeRemark() {
+    try {
+      final parsedUrl = V2ray.parseFromURL(configs);
+      final remark = parsedUrl.remark.trim();
+      // اگر نام کانفیگ خالی بود، از نوع پروتکل به عنوان نام جایگزین استفاده کن
+      return remark.isNotEmpty ? remark : protocolType;
+    } catch (e) {
+      // اگر در حین پارس کردن خطایی رخ داد، به عنوان راه حل جایگزین،
+      // متنی که بعد از آخرین علامت # آمده است را به عنوان نام برمی‌گردانیم
+      final hashIndex = configs.lastIndexOf('#');
+      if (hashIndex != -1 && hashIndex < configs.length - 1) {
+        // از decode کردن خودداری می‌کنیم تا همان خطا دوباره رخ ندهد
+        return configs.substring(hashIndex + 1);
+      }
+      // در غیر این صورت، از نوع پروتکل استفاده کن
+      return protocolType;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -513,7 +495,7 @@ class V2rayConfigBox extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _tryParse(configs)?.remark.trim() ?? protocolType,
+                        _getSafeRemark(), // <<-- از تابع امن جدید استفاده می‌کنیم
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -565,14 +547,6 @@ class V2rayConfigBox extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  V2RayURL? _tryParse(String url) {
-    try {
-      return V2ray.parseFromURL(url);
-    } catch (e) {
-      return null;
-    }
   }
 }
 

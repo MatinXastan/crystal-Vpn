@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:vpn/configurations/conf.dart';
+import 'package:vpn/configurations/validators.dart';
 import 'package:vpn/data/model/ip_info_model.dart';
 import 'package:vpn/data/repo/ip_info_repo.dart';
 
@@ -167,11 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 32),
                     Visibility(
                       visible: service.v2rayState == Conf.connectStatus,
-                      child: _ConnectionBox(
-                        size: size,
-                        service: service,
-                        onTap: () {},
-                      ),
+                      child: _ConnectionBox(size: size, service: service),
                     ),
                     Expanded(child: SizedBox()),
                   ],
@@ -208,19 +205,16 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _ConnectionBox extends StatelessWidget {
-  Function() onTap;
   final V2rayService service;
-  _ConnectionBox({
-    super.key,
-    required this.size,
-    required this.service,
-    required this.onTap,
-  });
+  _ConnectionBox({super.key, required this.size, required this.service});
 
   final Size size;
 
   @override
   Widget build(BuildContext context) {
+    final protocolType = Validators.getProtocolType(
+      service.selectedConfig?.config ?? "connected",
+    );
     return GlassBox(
       width: size.width / 1.1,
       height: size.height / 3.5,
@@ -253,31 +247,28 @@ class _ConnectionBox extends StatelessWidget {
               SizedBox(height: 4),
               Divider(color: Colors.grey),
 
-              GestureDetector(
-                onTap: onTap,
-                child: Container(
-                  alignment: Alignment.center,
-                  width: size.width / 1.55,
-                  height: size.height / 14,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(32),
-                      topRight: Radius.circular(32),
+              Container(
+                alignment: Alignment.center,
+                width: size.width / 1.55,
+                height: size.height / 14,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  ),
+                  color: const Color.fromARGB(255, 49, 203, 82),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check),
+                    SizedBox(width: 4),
+                    Text(
+                      "Protocol: $protocolType",
+                      style: TextStyle(fontSize: 20),
                     ),
-                    color: const Color.fromARGB(255, 49, 203, 82),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check),
-                      SizedBox(width: 4),
-                      Text(
-                        "Configuration check",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -383,8 +374,8 @@ class _CurrentLocationState extends State<CurrentLocation> {
         Row(
           children: [
             rightChild,
-            const SizedBox(width: 8),
-            // دکمه دستی برای ریفرش (اختیاری)
+            Visibility(visible: _error != null, child: SizedBox(width: 8)),
+
             Visibility(
               visible: _error != null,
               child: IconButton(

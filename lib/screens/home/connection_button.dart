@@ -29,10 +29,10 @@ class ConnectButton extends StatefulWidget {
   });
 
   @override
-  State<ConnectButton> createState() => _ConnectButtonState();
+  State<ConnectButton> createState() => ConnectButtonState();
 }
 
-class _ConnectButtonState extends State<ConnectButton> {
+class ConnectButtonState extends State<ConnectButton> {
   late V2ray connectV2ray;
   late V2rayService v2rayService;
   late ConfigAdvancedModel advancedAutoConfigs;
@@ -62,7 +62,7 @@ class _ConnectButtonState extends State<ConnectButton> {
     ),
     Padding(
       padding: EdgeInsets.only(left: sizePaddingLeft),
-      child: Assets.images.playBlue.image(
+      child: Assets.images.playYellow.image(
         width: sizePlayWidget,
         height: sizePlayWidget,
       ),
@@ -288,7 +288,7 @@ class _ConnectButtonState extends State<ConnectButton> {
         await connectV2ray.startV2Ray(
           remark: parser.remark,
           config: parser.getFullConfiguration(),
-          proxyOnly: true,
+          proxyOnly: false,
         );
       }
       v2rayService.setStatus(2);
@@ -327,13 +327,15 @@ class _ConnectButtonState extends State<ConnectButton> {
     }
   }
 
-  Future<int> getconnectedping() async {
-    try {
-      final delay = await connectV2ray.getConnectedServerDelay();
+  /* Future<void> getconnectedping() async {
+    if (mounted && v2rayService.v2rayState == Conf.connectStatus) {
+      try {
+        final delay = await connectV2ray.getConnectedServerDelay();
 
-      return delay;
-    } catch (e) {
-      return -1;
+        v2rayService.updateConnectedServerDelay(delay);
+      } catch (e) {
+        v2rayService.updateConnectedServerDelay(-1);
+      }
     }
-  }
+  } */
 }

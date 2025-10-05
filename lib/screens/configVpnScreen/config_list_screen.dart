@@ -57,8 +57,9 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                       ),
                     );
                   } else if (state is StartRecivingConfigsState) {
-                    //TODO: یادم باشه داخل سایت لوتی یه انیمیشن خوب برا اینجا بیارم
-                    return Center(child: Text('در حال دریافت کانفیگ‌ها...'));
+                    return Center(
+                      child: Lottie.asset(Assets.images.lottiefiles.loading),
+                    );
                   } else if (state is RecivingConfigsSuccessState) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
