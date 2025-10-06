@@ -4,25 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:vpn/configurations/validators.dart';
 import 'package:vpn/data/model/config_model.dart';
-import 'package:vpn/data/repo/data_vpn_repo.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
 
 part 'config_list_event.dart';
 part 'config_list_state.dart';
 
 class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
-  final IDataVpnRepo dataVpnRepo;
   final IReciveConfigsRepo reciveConfigsRepo;
 
-  ConfigListBloc({required this.dataVpnRepo, required this.reciveConfigsRepo})
+  ConfigListBloc({required this.reciveConfigsRepo})
     : super(ConfigListInitial()) {
     on<ConfigListEvent>((event, emit) async {
-      if (event is StartCheckingStatusEvent) {
-        final countConfigs = await dataVpnRepo.getAllVpns();
-        if (countConfigs.isEmpty) {
-          emit(EmptyConfigState());
-        }
-      }
+      emit(EmptyConfigState());
+
       if (event is StartRecivingConfigsEvent) {
         try {
           emit(StartRecivingConfigsState());

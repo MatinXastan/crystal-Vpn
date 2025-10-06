@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:vpn/data/model/config_model.dart';
-import 'package:vpn/data/repo/data_vpn_repo.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
 import 'package:vpn/gen/assets.gen.dart';
 import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
@@ -26,10 +25,7 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
         extendBody: true,
         body: BlocProvider(
           create: (context) {
-            final bloc = ConfigListBloc(
-              dataVpnRepo: vpnRepository,
-              reciveConfigsRepo: reciveConfigsRepo,
-            );
+            final bloc = ConfigListBloc(reciveConfigsRepo: reciveConfigsRepo);
             bloc.add(StartCheckingStatusEvent());
             return bloc;
           },

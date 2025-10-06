@@ -1,10 +1,7 @@
 import 'package:dio/dio.dart' show Dio, DioException;
-import 'package:vpn/configurations/func.dart';
-import 'package:vpn/data/model/config_model.dart';
 
 abstract class IReciveConfigsDataSrc {
   Future<List<String>> futureConfigs(String fileName);
-  Future<List<ConfigModel>> reciveConfigAdvancedAuto();
 }
 
 class ReciveConfigsDataSrc implements IReciveConfigsDataSrc {
@@ -43,18 +40,6 @@ class ReciveConfigsDataSrc implements IReciveConfigsDataSrc {
       }
     } on DioException catch (e) {
       throw Exception('Network Error: ${e.message}');
-    } catch (e) {
-      throw Exception('An unknown error occurred: $e');
-    }
-  }
-
-  @override
-  Future<List<ConfigModel>> reciveConfigAdvancedAuto() async {
-    try {
-      final response = await futureConfigs('v2ray_configs.txt');
-      final configs = FunctionMethods.separateconfigsVmess(response);
-      final models = FunctionMethods.convertConfigToModel(configs);
-      return models;
     } catch (e) {
       throw Exception('An unknown error occurred: $e');
     }
