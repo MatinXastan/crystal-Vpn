@@ -1,8 +1,7 @@
-import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
-import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/configurations/validators.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/repo/data_vpn_repo.dart';
@@ -187,6 +186,7 @@ class ConfigListBloc extends Bloc<ConfigListEvent, ConfigListState> {
       }
     }
 
+    // ignore: invalid_use_of_visible_for_testing_member
     emit(
       RecivingConfigsSuccessState(
         vless: vless,

@@ -1,9 +1,6 @@
 import 'package:dio/dio.dart' show Dio, DioException;
-import 'package:flutter/foundation.dart'; // برای ValueNotifier
-import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/configurations/func.dart';
 import 'package:vpn/data/model/config_model.dart';
-import 'package:vpn/data/repo/recive_configs_repo.dart';
 
 abstract class IReciveConfigsDataSrc {
   Future<List<String>> futureConfigs(String fileName);

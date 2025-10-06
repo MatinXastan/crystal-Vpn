@@ -32,6 +32,7 @@ final class TestPingOneConfigErrorState extends ConfigListState {}
 final class StartRecivingConfigsState extends ConfigListState {}
 
 // تکمیل شد
+// ignore: must_be_immutable
 final class RecivingConfigsSuccessState extends ConfigListState {
   List<String> vless;
   List<String> vmess;

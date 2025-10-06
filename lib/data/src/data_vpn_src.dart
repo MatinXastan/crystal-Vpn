@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/vpn_model.dart';
 
 // این اینترفیس، قراردادهای DataSource را برای کار با داده‌های VPN مشخص می‌کند

@@ -6,10 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
-import 'package:vpn/data/repo/recive_configs_repo.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/screens/home/custom_segmented_button.dart';
-import 'package:vpn/screens/home/home_screen.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
 
@@ -17,6 +14,7 @@ final double sizeConnectButtonWidget = 200;
 final double sizePlayWidget = 125;
 final double sizePaddingLeft = 10;
 
+// ignore: must_be_immutable
 class ConnectButton extends StatefulWidget {
   // وضعیت دکمه از بیرون (از طریق HomeScreen) مشخص می‌شود
   int status;
@@ -36,8 +34,6 @@ class ConnectButtonState extends State<ConnectButton> {
   late V2ray connectV2ray;
   late V2rayService v2rayService;
   late ConfigAdvancedModel advancedAutoConfigs;
-  bool _isPingingAll = false;
-  final Map<String, int> _pingResults = {};
   DateTime? lastPingForAdvancedAutoConfigs;
 
   final List<ImageProvider> connectButtoms = [
@@ -97,7 +93,6 @@ class ConnectButtonState extends State<ConnectButton> {
     connectV2ray = V2ray(
       onStatusChanged: (status) {
         if (mounted) {
-          //TODO: باید اینجاها ببینم کار میکنه یعنی درست منتقل
           if (status.state == Conf.connectStatus) {
             v2rayService.setV2rayState(Conf.connectStatus);
             /* setState(() {
@@ -185,6 +180,7 @@ class ConnectButtonState extends State<ConnectButton> {
             boxShadow: [
               BoxShadow(
                 // از وضعیت نمایشی برای تعیین رنگ و آیکون استفاده می‌کنیم
+                // ignore: deprecated_member_use
                 color: colorList[_displayStatus].withOpacity(0.5),
                 spreadRadius: 6,
                 blurRadius: 20,
@@ -279,7 +275,7 @@ class ConnectButtonState extends State<ConnectButton> {
         const SnackBar(content: Text("The selected config is invalid.")),
       );
       if (mounted) v2rayService.setStatus(3);
-      ;
+
       return;
     }
 
@@ -296,6 +292,7 @@ class ConnectButtonState extends State<ConnectButton> {
     } catch (e) {
       log("Error starting V2Ray: $e");
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text("Error starting V2Ray: $e")));
       if (mounted) v2rayService.setStatus(3);
@@ -323,7 +320,6 @@ class ConnectButtonState extends State<ConnectButton> {
       v2rayService.setIsPingingAll(false);
       v2rayService.setStatus(0);
       v2rayService.setLastPingTime(DateTime.now());
-      setState(() => _isPingingAll = false);
     }
   }
 

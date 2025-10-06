@@ -1,5 +1,3 @@
-import 'dart:ui';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -10,9 +8,7 @@ import 'package:vpn/gen/assets.gen.dart';
 import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
 import 'package:vpn/screens/configVpnScreen/empty_config_screen.dart';
 import 'package:vpn/screens/configVpnScreen/protocol_screen.dart';
-import 'package:vpn/screens/home/connection_button.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
-import 'package:vpn/screens/widgets/aurora_border.dart';
 
 class ListOfConfigsScreen extends StatefulWidget {
   const ListOfConfigsScreen({super.key});

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+// ignore: must_be_immutable
 class BtmNavItem extends StatelessWidget {
   IconData icon;
 

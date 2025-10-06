@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class GlassBox extends StatelessWidget {
   Widget child;
   double width;
@@ -26,19 +27,23 @@ class GlassBox extends StatelessWidget {
             // گرادیانت ملایم برای حس عمق مثل Mica
             gradient: LinearGradient(
               colors: [
+                // ignore: deprecated_member_use
                 Colors.white.withOpacity(0.2),
+                // ignore: deprecated_member_use
                 Colors.white.withOpacity(0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             border: Border.all(
+              // ignore: deprecated_member_use
               color: Colors.white.withOpacity(0.3), // خط دور نیمه‌شفاف
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),

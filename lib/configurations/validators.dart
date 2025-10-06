@@ -9,9 +9,4 @@ class Validators {
     if (config.startsWith("ss://")) return "ShadowSocks";
     return "Unknown Protocol";
   }
-
-  //TODO: کاملش کنم برای تشخیص لوکیشن
-  static String getLocationType() {
-    return '';
-  }
 }

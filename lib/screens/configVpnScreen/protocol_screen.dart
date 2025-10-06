@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 import 'package:provider/provider.dart';
-import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 import 'package:vpn/services/nav_provider.dart';
@@ -33,6 +32,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
   final Map<String, int> _pingResults = {};
   ConfigModel? _selectedConfig;
   bool _isPingingAll = false;
+  // ignore: unused_field
   int _pingedCount = 0;
   List<ConfigModel> _displayConfigs = [];
   DateTime? _lastPingTime;
@@ -121,11 +121,10 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
     _sortConfigsByPing();
   }
 
-  /// گرفتن پینگ یک کانفیگ با استفاده از getServerDelay (نسخه اصلاح شده)
   Future<ConfigModel> _getSinglePing(ConfigModel configModel) async {
     final parser = _tryParse(configModel.config);
     if (parser == null) {
-      return configModel.copyWith(delay: -2); // کانفیگ نامعتبر
+      return configModel.copyWith(delay: -2);
     }
     try {
       // *** نکته کلیدی اینجاست ***
@@ -292,12 +291,14 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
             if (_displayConfigs.isNotEmpty) {
               final ConfigModel bestPing = _displayConfigs.first;
               selectConfig(bestPing);
+              // ignore: use_build_context_synchronously
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('بهترین کانفیگ انتخاب شد'),
                   backgroundColor: Color.fromARGB(255, 56, 255, 1),
                 ),
               );
+              // ignore: use_build_context_synchronously
               context.read<NavigationProvider>().changeTab(
                 BtmNavScreenIndex.home,
               );
@@ -343,6 +344,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
         height: 75,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(18)),
+          // ignore: deprecated_member_use
           color: Colors.black.withOpacity(0.5),
         ),
         child: InkWell(
@@ -428,14 +430,14 @@ class V2rayConfigBox extends StatelessWidget {
       // اگر نام کانفیگ خالی بود، از نوع پروتکل به عنوان نام جایگزین استفاده کن
       return remark.isNotEmpty ? remark : protocolType;
     } catch (e) {
-      // اگر در حین پارس کردن خطایی رخ داد، به عنوان راه حل جایگزین،
+      /* // اگر در حین پارس کردن خطایی رخ داد، به عنوان راه حل جایگزین،
       // متنی که بعد از آخرین علامت # آمده است را به عنوان نام برمی‌گردانیم
       final hashIndex = configs.lastIndexOf('#');
       if (hashIndex != -1 && hashIndex < configs.length - 1) {
         // از decode کردن خودداری می‌کنیم تا همان خطا دوباره رخ ندهد
         return configs.substring(hashIndex + 1);
       }
-      // در غیر این صورت، از نوع پروتکل استفاده کن
+      // در غیر این صورت، از نوع پروتکل استفاده کن */
       return protocolType;
     }
   }
@@ -461,6 +463,7 @@ class V2rayConfigBox extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: isSelected ? Colors.green.shade600.withOpacity(0.5) : null,
           borderRadius: BorderRadius.circular(20),
           border: isSelected
@@ -469,6 +472,7 @@ class V2rayConfigBox extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: const Color(0xFF00FFD1).withOpacity(0.5),
                     blurRadius: 12,
                     spreadRadius: 2,

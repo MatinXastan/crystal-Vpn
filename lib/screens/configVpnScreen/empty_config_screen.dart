@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
 import 'package:vpn/screens/widgets/aurora_border.dart';
 
 import '../../gen/assets.gen.dart';
 
 class EmptyConfigScreen extends StatelessWidget {
   final Function() ontap;
-  EmptyConfigScreen({super.key, required this.ontap});
+  const EmptyConfigScreen({super.key, required this.ontap});
 
   @override
   Widget build(BuildContext context) {

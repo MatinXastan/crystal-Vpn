@@ -13,6 +13,7 @@ class V2rayService with ChangeNotifier {
   final Map<String, int> _pingResults = {};
   ConfigModel? _selectedConfig;
   bool _isPingingAll = false;
+  // ignore: prefer_final_fields
   int _pingedCount = 0;
   List<ConfigModel> _displayConfigs = [];
   DateTime? _lastPingTime;
@@ -41,7 +42,6 @@ class V2rayService with ChangeNotifier {
   }
 
   void updateV2rayStatus(V2RayStatus v2Status) {
-    print("status is : $v2Status");
     _v2rayStatus = v2Status;
     notifyListeners();
   }

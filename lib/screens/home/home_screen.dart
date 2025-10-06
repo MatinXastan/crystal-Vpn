@@ -82,7 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ), // گردی گوشه‌ها
                                   gradient: LinearGradient(
                                     colors: [
+                                      // ignore: deprecated_member_use
                                       Colors.white.withOpacity(0.2),
+                                      // ignore: deprecated_member_use
                                       Colors.white.withOpacity(0.05),
                                     ],
                                     begin: Alignment.topCenter,
@@ -90,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   boxShadow: [
                                     BoxShadow(
+                                      // ignore: deprecated_member_use
                                       color: Colors.black.withOpacity(
                                         0.2,
                                       ), // رنگ سایه
@@ -125,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     12,
                                                     6,
                                                     173,
+                                                    // ignore: deprecated_member_use
                                                   ).withOpacity(0.8),
                                           ),
                                           SizedBox(width: 8),
@@ -152,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 12,
                                                 6,
                                                 173,
+                                                // ignore: deprecated_member_use
                                               ).withOpacity(0.8),
                                       ),
                                     ],
@@ -206,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _ConnectionBox extends StatelessWidget {
   final V2rayService service;
-  _ConnectionBox({super.key, required this.size, required this.service});
+  const _ConnectionBox({required this.size, required this.service});
 
   final Size size;
 

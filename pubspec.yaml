@@ -47,6 +47,7 @@ dependencies:
   flutter_v2ray_client:
     git:
       url: https://github.com/shayanheidari01/flutter_v2ray_client.git
+  bloc: ^9.0.1
   
 dev_dependencies:
   flutter_test:

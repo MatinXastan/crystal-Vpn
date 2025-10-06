@@ -1,9 +1,6 @@
-import 'dart:ui';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/screens/home/connection_button.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -80,13 +77,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+// ignore: must_be_immutable
 class _InformationWidget extends StatelessWidget {
   String tileName;
   String name;
   String url;
   IconData icon;
   _InformationWidget({
-    super.key,
     required this.tileName,
     required this.url,
     required this.name,
@@ -122,7 +119,7 @@ class _InformationWidget extends StatelessWidget {
   }
 
   Future<void> _lunchBrowse(String url) async {
-    final Uri uri = Uri.parse(url);
+    Uri.parse(url);
     /* if (!await launchUrl(uri)) {
       throw Exception('Could not launch $url');
     } */
@@ -130,7 +127,7 @@ class _InformationWidget extends StatelessWidget {
 }
 
 class _CustomDivider extends StatelessWidget {
-  const _CustomDivider({super.key});
+  const _CustomDivider();
 
   @override
   Widget build(BuildContext context) {

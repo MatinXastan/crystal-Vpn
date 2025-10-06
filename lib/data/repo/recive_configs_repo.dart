@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:vpn/configurations/conf.dart';
-import 'package:vpn/data/model/config_advanced_model.dart';
+
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/src/recive_configs_data_src.dart';
 

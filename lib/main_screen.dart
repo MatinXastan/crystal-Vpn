@@ -46,6 +46,7 @@ class _MainScreenState extends State<MainScreen> {
     var size = MediaQuery.of(context).size;
     double btmNavHeight = size.height * .1;
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () => _onWillPop(navProvider),
       child: Scaffold(

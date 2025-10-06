@@ -141,9 +141,11 @@ class _AuroraBorderPainter extends CustomPainter {
 
     // شفافیت رنگ‌ها را بر اساس انیمیشن تنفس تنظیم می‌کند
     final pulsatingColors1 = colors1
+        // ignore: deprecated_member_use
         .map((c) => c.withOpacity(c.opacity * pulsate))
         .toList();
     final pulsatingColors2 = colors2
+        // ignore: deprecated_member_use
         .map((c) => c.withOpacity(c.opacity * pulsate))
         .toList();
 
