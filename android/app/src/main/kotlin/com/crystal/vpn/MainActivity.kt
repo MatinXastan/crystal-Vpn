@@ -1,4 +1,4 @@
-package com.example.vpn
+package com.crystal.vpn
 
 import io.flutter.embedding.android.FlutterActivity
 
