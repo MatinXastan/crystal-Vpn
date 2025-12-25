@@ -263,49 +263,52 @@ class ConfigProtocolCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24, top: 24),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.security,
-                color: const Color.fromARGB(255, 20, 255, 200),
-                size: 85,
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(protocolType, style: TextStyle(fontSize: 24)),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.only(left: 32, right: 32),
-          child: Divider(color: Colors.blueGrey),
-        ),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(left: 24, right: 24),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 24, top: 24),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Icon(Icons.format_list_bulleted_rounded, size: 28),
+                Icon(
+                  Icons.security,
+                  color: const Color.fromARGB(255, 2, 255, 196),
+                  size: 85,
                 ),
-                SizedBox(width: 4),
+                SizedBox(width: 12),
                 Expanded(
-                  child: Text('Count: $count', style: TextStyle(fontSize: 22)),
+                  child: Text(protocolType, style: TextStyle(fontSize: 24)),
                 ),
-                GestureDetector(
-                  onTap: onTap,
-                  child: Text(
+              ],
+            ),
+          ),
+          SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 32, right: 32),
+            child: Divider(color: Colors.blueGrey),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: 24, right: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Icon(Icons.format_list_bulleted_rounded, size: 28),
+                  ),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      'Count: $count',
+                      style: TextStyle(fontSize: 22),
+                    ),
+                  ),
+                  Text(
                     'All Configs',
                     style: TextStyle(
                       fontSize: 16,
@@ -314,12 +317,12 @@ class ConfigProtocolCard extends StatelessWidget {
                       decoration: TextDecoration.underline,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

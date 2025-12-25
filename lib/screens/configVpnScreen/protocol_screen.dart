@@ -82,7 +82,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
   Future<void> getAllPings() async {
     if (_isPingingAll) return;
     v2rayService.setIsPingingAll(true);
-    v2rayService.setStatus(1);
+    //v2rayService.setStatus(1);
     setState(() {
       _isPingingAll = true;
       _pingedCount = 0;
@@ -152,7 +152,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
       return 0;
     });
     v2rayService.setIsPingingAll(false);
-    v2rayService.setStatus(0);
+    //v2rayService.setStatus(0);
     if (mounted) {
       setState(() {
         _lastPingTime = DateTime.now();
@@ -164,7 +164,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
   void stopPinging() {
     if (mounted) {
       v2rayService.setIsPingingAll(false);
-      v2rayService.setStatus(0);
+      //v2rayService.setStatus(0);
       v2rayService.setLastPingTime(DateTime.now());
       setState(() => _isPingingAll = false);
     }
