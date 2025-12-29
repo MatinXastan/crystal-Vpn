@@ -66,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator(
                     key: _configKey,
                     onGenerateRoute: (settings) => MaterialPageRoute(
-                      builder: (context) => const ListOfConfigsScreen(),
+                      builder: (context) => ListOfConfigsScreen(),
                     ),
                   ),
                   Navigator(

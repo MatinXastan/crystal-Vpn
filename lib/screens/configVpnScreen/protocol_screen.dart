@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 import 'package:provider/provider.dart';
 import 'package:vpn/data/model/config_model.dart';
+import 'package:vpn/l10n/app_localizations.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
@@ -182,7 +184,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -261,14 +263,15 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
   }
 
   Widget autoButton(Size size) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 48, 12, 12),
       child: GestureDetector(
         onTap: () async {
           if (_isPingingAll) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('لطفاً تا پایان عملیات تست پینگ صبر کنید.'),
+              SnackBar(
+                content: Text(appLocalizations.pingWaitMsg),
                 backgroundColor: Colors.redAccent,
               ),
             );
@@ -278,13 +281,12 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
                 _lastPingTime ?? now.subtract(const Duration(days: 1));
             if (now.difference(lastPing).inHours >= 6) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'کانفیگ‌ها نیاز به تست مجدد دارند. تست پینگ شروع می‌شود.',
-                  ),
+                SnackBar(
+                  content: Text(appLocalizations.retestNeededMsg),
                   backgroundColor: Colors.orangeAccent,
                 ),
               );
+
               await getAllPings();
             }
 
@@ -293,8 +295,8 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               selectConfig(bestPing);
               // ignore: use_build_context_synchronously
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('بهترین کانفیگ انتخاب شد'),
+                SnackBar(
+                  content: Text(appLocalizations.bestConfigSelected),
                   backgroundColor: Color.fromARGB(255, 56, 255, 1),
                 ),
               );
@@ -308,7 +310,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
         child: GlassBox(
           width: size.width,
           height: size.height / 10,
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.0),
             child: Row(
               children: [
@@ -320,7 +322,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Auto Select',
+                    appLocalizations.autoSelect,
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -338,6 +340,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
   }
 
   Widget _buildRefreshButton() {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     if (_isPingingAll) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -362,7 +365,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                "Stop",
+                appLocalizations.stop,
                 /* 
                 "$_pingedCount/$totalConfigs", */
                 style: const TextStyle(
@@ -396,7 +399,7 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               color: Colors.black,
             ),
           ),
-          Text('Start'),
+          Text(appLocalizations.test),
         ],
       ),
     );

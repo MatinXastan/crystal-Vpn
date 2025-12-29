@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // اضافه شده برای استفاده از Bloc
 import 'package:lottie/lottie.dart';
+import 'package:vpn/l10n/app_localizations.dart';
 import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
 import 'package:vpn/screens/widgets/aurora_border.dart';
 
@@ -53,12 +54,13 @@ class _EmptyConfigScreenState extends State<EmptyConfigScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Lottie.asset(Assets.images.lottiefiles.empty),
         Text(
-              'Click to find new configs',
+              appLocalizations.findNewConfigs,
               style: const TextStyle(
                 fontSize: 18,
                 color: Color.fromARGB(255, 130, 15, 7),
@@ -67,6 +69,7 @@ class _EmptyConfigScreenState extends State<EmptyConfigScreen> {
             .animate(onPlay: (controller) => controller.repeat(reverse: true))
             .fade(duration: 850.ms),
         const SizedBox(height: 12),
+
         AuroraBorder(
           child: ElevatedButton(
             style: ButtonStyle(
@@ -78,15 +81,16 @@ class _EmptyConfigScreenState extends State<EmptyConfigScreen> {
               ),
             ),
             onPressed: _handleManualTap,
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Receiving Configs',
+                appLocalizations.receivingConfigs,
                 style: TextStyle(fontSize: 32, color: Colors.black),
               ),
             ),
           ),
         ),
+
         const Expanded(child: SizedBox()),
       ],
     );

@@ -102,11 +102,14 @@ class $AssetsImagesLottiefilesGen {
   /// File path: assets/images/lottiefiles/empty.json
   String get empty => 'assets/images/lottiefiles/empty.json';
 
+  /// File path: assets/images/lottiefiles/error.json
+  String get error => 'assets/images/lottiefiles/error.json';
+
   /// File path: assets/images/lottiefiles/loading.json
   String get loading => 'assets/images/lottiefiles/loading.json';
 
   /// List of all assets
-  List<String> get values => [empty, loading];
+  List<String> get values => [empty, error, loading];
 }
 
 class Assets {

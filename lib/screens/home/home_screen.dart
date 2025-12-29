@@ -9,6 +9,7 @@ import 'package:vpn/data/model/ip_info_model.dart';
 import 'package:vpn/data/repo/ip_info_repo.dart';
 
 import 'package:vpn/gen/assets.gen.dart';
+import 'package:vpn/l10n/app_localizations.dart';
 import 'package:vpn/screens/home/connection_button.dart';
 
 import 'package:vpn/screens/widgets/glass_box.dart';
@@ -40,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -64,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("selected server"),
+                            Text(appLocalizations.selectedServer),
                             SizedBox(height: 8),
                             GestureDetector(
                               onTap: () {
@@ -135,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Flexible(
                                             child: Text(
                                               service.selectedRemark ??
-                                                  "select A config",
+                                                  appLocalizations.selectConfig,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(fontSize: 14),
@@ -217,6 +219,7 @@ class _ConnectionBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     final protocolType = Validators.getProtocolType(
       service.selectedConfig?.config ?? "connected",
     );
@@ -233,7 +236,7 @@ class _ConnectionBox extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Connection status',
+                    appLocalizations.connectionStatus,
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                   Icon(
@@ -270,7 +273,7 @@ class _ConnectionBox extends StatelessWidget {
                     Icon(Icons.check),
                     SizedBox(width: 4),
                     Text(
-                      "Protocol: $protocolType",
+                      "${appLocalizations.protocol}$protocolType",
                       style: TextStyle(fontSize: 20),
                     ),
                   ],
@@ -340,6 +343,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     Widget rightChild;
 
     if (_loading) {
@@ -349,7 +353,10 @@ class _CurrentLocationState extends State<CurrentLocation> {
         child: CircularProgressIndicator(strokeWidth: 2),
       );
     } else if (_error != null) {
-      rightChild = Text('Error', style: TextStyle(color: Colors.red));
+      rightChild = Text(
+        appLocalizations.error,
+        style: TextStyle(color: Colors.red),
+      );
     } else if (_ipInfo != null) {
       rightChild = Text(
         '${_ipInfo!.countryCode!} ${_ipInfo!.countryName!}',
@@ -357,8 +364,8 @@ class _CurrentLocationState extends State<CurrentLocation> {
         style: const TextStyle(fontSize: 18, color: Colors.green),
       );
     } else {
-      rightChild = const Text(
-        'Unknown',
+      rightChild = Text(
+        appLocalizations.unknown,
         style: TextStyle(color: Colors.white, fontSize: 18),
       );
     }
@@ -367,11 +374,11 @@ class _CurrentLocationState extends State<CurrentLocation> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
-          children: const [
+          children: [
             Icon(Icons.language, color: Colors.grey),
             SizedBox(width: 4),
             Text(
-              'Location',
+              appLocalizations.location,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],
@@ -386,7 +393,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
               child: IconButton(
                 icon: const Icon(Icons.refresh, color: Colors.white),
                 onPressed: _fetchLocation,
-                tooltip: 'Refresh location',
+                tooltip: appLocalizations.refreshLocation,
               ),
             ),
           ],
@@ -457,6 +464,7 @@ class _TimerConnectState extends State<TimerConnect> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     final elapsed = _stopwatch.elapsed;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -465,7 +473,10 @@ class _TimerConnectState extends State<TimerConnect> {
           children: [
             Icon(Icons.timer, color: Colors.grey),
             SizedBox(width: 4),
-            Text('Up time', style: TextStyle(fontSize: 16, color: Colors.grey)),
+            Text(
+              appLocalizations.uptime,
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
           ],
         ),
         Text(

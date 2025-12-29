@@ -7,6 +7,7 @@ import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/gen/assets.gen.dart';
+import 'package:vpn/l10n/app_localizations.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
 
@@ -167,6 +168,8 @@ class ConnectButtonState extends State<ConnectButton> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
+
     return GestureDetector(
       onTap: _handleTap,
       child: AnimatedOpacity(
@@ -201,6 +204,7 @@ class ConnectButtonState extends State<ConnectButton> {
   Future<void> _connectAutoToVpn(
     /* {required ConnectionMode selectedMode} */
   ) async {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     /* if (selectedMode == ConnectionMode.advancedAuto) {
       if (advancedAutoConfigs.configs.length > 1) {
         final DateTime now = DateTime.now();
@@ -227,9 +231,9 @@ class ConnectButtonState extends State<ConnectButton> {
       }
     } else if (selectedMode == ConnectionMode.manual) { */
     if (v2rayService.selectedConfig == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("یک کانفیگ را در لیست انتخاب کنید ")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(appLocalizations.selectConfigMsg)));
 
       Provider.of<NavigationProvider>(
         context,
@@ -261,10 +265,11 @@ class ConnectButtonState extends State<ConnectButton> {
   }
 
   Future<void> _connectToVpn(ConfigModel configModel) async {
+    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     if (v2rayService.statuseVpn == 'CONNECTED' ||
         v2rayService.statuseVpn == 'CONNECTING') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Already connected or connecting.")),
+        SnackBar(content: Text(appLocalizations.alreadyConnectedMsg)),
       );
       return;
     }
@@ -272,7 +277,7 @@ class ConnectButtonState extends State<ConnectButton> {
     final parser = _tryParse(configModel.config);
     if (parser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("The selected config is invalid.")),
+        SnackBar(content: Text(appLocalizations.invalidConfigMsg)),
       );
       if (mounted) v2rayService.setStatus(3);
 
