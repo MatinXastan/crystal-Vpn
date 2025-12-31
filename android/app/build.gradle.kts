@@ -1,16 +1,19 @@
 import java.util.Properties
 import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
+
 android {
     namespace = "com.crystal.vpn"
     compileSdk = flutter.compileSdkVersion
@@ -35,6 +38,27 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+
+    // --- Native Libraries Packaging Configuration ---
+    packaging {
+        jniLibs {
+            // This is the correct way to set 'enableUncompressedNativeLibs = false' in AGP 8.1+
+            // It ensures native libraries are stored compressed in the APK/Bundle.
+            useLegacyPackaging = true
+        }
+    }
+
+    // --- Splits Configuration ---
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            //noinspection ChromeOsAbiSupport
+            include("x86_64", "armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
+    }
+
     signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
@@ -43,12 +67,19 @@ android {
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            //signingConfig = signingConfigs.getByName("debug")
             signingConfig = signingConfigs.getByName("release")
+            
+            // --- NDK Configuration ---
+            ndk {
+                //noinspection ChromeOsAbiSupport
+                abiFilters.addAll(listOf("x86_64", "armeabi-v7a", "arm64-v8a"))
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 }

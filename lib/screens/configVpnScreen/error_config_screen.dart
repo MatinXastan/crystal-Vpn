@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vpn/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
 import 'package:vpn/screens/widgets/aurora_border.dart';
 
@@ -66,20 +66,20 @@ class _ErrorConfigScreenState extends State<ErrorConfigScreen> {
         const SizedBox(height: 16),
 
         Text(
-              appLocalizations.errorReceivingConfigs ??
-                  "خطا در دریافت کانفیگ", // متن خطا از لوکالیزیشن
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(
-                  255,
-                  180,
-                  20,
-                  20,
-                ), // رنگ قرمز برای متن خطا
-              ),
-            )
+          appLocalizations.errorReceivingConfigs ??
+              "خطا در دریافت کانفیگ", // متن خطا از لوکالیزیشن
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(
+              255,
+              180,
+              20,
+              20,
+            ), // رنگ قرمز برای متن خطا
+          ),
+        )
             .animate(onPlay: (controller) => controller.repeat(reverse: true))
             .fade(duration: 850.ms),
 

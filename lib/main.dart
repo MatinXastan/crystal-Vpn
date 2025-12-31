@@ -2,16 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:vpn/l10n/app_localizations.dart';
 import 'package:vpn/language_selection.dart'; // مسیر فایل جدید
 import 'package:vpn/services/local_provider.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
 import 'package:vpn/splash_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  WidgetsFlutterBinding
+      .ensureInitialized(); // تنظیم استایل سیستمSystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+  );
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Color.fromARGB(255, 0, 0, 0),
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+  // ۲. تنظیم رنگ سیاه برای پس‌زمینه و آیکون‌های سفید
 
   // ایجاد نمونه‌ای از LocaleProvider برای بارگذاری زبان قبل از اجرای برنامه
   final localeProvider = LocaleProvider();

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vpn/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -178,9 +178,8 @@ class _SplashScreenState extends State<SplashScreen>
             AnimatedPositioned(
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeOutExpo,
-              bottom: _showTerms
-                  ? 0
-                  : -400, // اگر فعال شد بیا بالا، وگرنه مخفی باش
+              bottom:
+                  _showTerms ? 0 : -400, // اگر فعال شد بیا بالا، وگرنه مخفی باش
               left: 0,
               right: 0,
               child: Container(

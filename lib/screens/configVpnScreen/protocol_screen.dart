@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 import 'package:provider/provider.dart';
 import 'package:vpn/data/model/config_model.dart';
-import 'package:vpn/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vpn/screens/widgets/glass_box.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
@@ -302,8 +302,8 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
               );
               // ignore: use_build_context_synchronously
               context.read<NavigationProvider>().changeTab(
-                BtmNavScreenIndex.home,
-              );
+                    BtmNavScreenIndex.home,
+                  );
             }
           }
         },
@@ -379,28 +379,28 @@ class _ProtocolScreenState extends State<ProtocolScreen> {
       );
     }
 
-    return Container(
-      alignment: Alignment.center,
-      width: 75,
-      height: 75,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(18)),
-        color: Color.fromARGB(255, 2, 255, 196),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: () => getAllPings(),
-            child: const Icon(
+    return GestureDetector(
+      onTap: () => getAllPings(),
+      child: Container(
+        alignment: Alignment.center,
+        width: 75,
+        height: 75,
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          color: Color.fromARGB(255, 2, 255, 196),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(
               Icons.speed_rounded,
               size: 36,
               color: Colors.black,
             ),
-          ),
-          Text(appLocalizations.test),
-        ],
+            Text(appLocalizations.test),
+          ],
+        ),
       ),
     );
   }
@@ -540,10 +540,10 @@ class V2rayConfigBox extends StatelessWidget {
                       delay > 0
                           ? Icons.check_circle
                           : (delay == -1 || delay == -2
-                                ? Icons.error
-                                : delay == -3
-                                ? Icons.hourglass_top_rounded
-                                : Icons.circle_outlined),
+                              ? Icons.error
+                              : delay == -3
+                                  ? Icons.hourglass_top_rounded
+                                  : Icons.circle_outlined),
                       color: getPingStatusColor(delay),
                     ),
                   ],

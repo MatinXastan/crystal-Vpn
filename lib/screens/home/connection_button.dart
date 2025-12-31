@@ -7,7 +7,7 @@ import 'package:vpn/configurations/conf.dart';
 import 'package:vpn/data/model/config_advanced_model.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vpn/services/nav_provider.dart';
 import 'package:vpn/services/v2ray_services.dart';
 
@@ -202,8 +202,8 @@ class ConnectButtonState extends State<ConnectButton> {
   }
 
   Future<void> _connectAutoToVpn(
-    /* {required ConnectionMode selectedMode} */
-  ) async {
+      /* {required ConnectionMode selectedMode} */
+      ) async {
     final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     /* if (selectedMode == ConnectionMode.advancedAuto) {
       if (advancedAutoConfigs.configs.length > 1) {

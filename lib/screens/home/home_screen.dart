@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 import 'package:vpn/configurations/conf.dart';
@@ -9,7 +10,7 @@ import 'package:vpn/data/model/ip_info_model.dart';
 import 'package:vpn/data/repo/ip_info_repo.dart';
 
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vpn/screens/home/connection_button.dart';
 
 import 'package:vpn/screens/widgets/glass_box.dart';
@@ -42,11 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        backgroundColor: Colors.transparent,
-        body: Stack(
+    return Scaffold(
+      extendBody: true,
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Stack(
           children: [
             Positioned.fill(
               child: Assets.images.background.image(fit: BoxFit.cover),
@@ -121,8 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Icon(
                                             Icons.arrow_drop_down,
-                                            color:
-                                                service.v2rayState ==
+                                            color: service.v2rayState ==
                                                     Conf.connectStatus
                                                 ? Colors.green
                                                 : Color.fromARGB(
@@ -149,8 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       // ویجت سوم در انتها
                                       Icon(
                                         Icons.circle,
-                                        color:
-                                            service.v2rayState ==
+                                        color: service.v2rayState ==
                                                 Conf.connectStatus
                                             ? Colors.green
                                             : Color.fromARGB(
@@ -254,7 +253,6 @@ class _ConnectionBox extends StatelessWidget {
               CurrentLocation(service: service),
               SizedBox(height: 4),
               Divider(color: Colors.grey),
-
               Container(
                 alignment: Alignment.center,
                 width: size.width / 1.55,
@@ -325,8 +323,8 @@ class _CurrentLocationState extends State<CurrentLocation> {
     });
 
     try {
-      final ipInfo = await ipInfoRepo
-          .getIpInfo(); // ipInfoRepo از جایی در دسترس فرض شده
+      final ipInfo =
+          await ipInfoRepo.getIpInfo(); // ipInfoRepo از جایی در دسترس فرض شده
       if (!mounted) return;
       setState(() {
         _ipInfo = ipInfo;
@@ -387,7 +385,6 @@ class _CurrentLocationState extends State<CurrentLocation> {
           children: [
             rightChild,
             Visibility(visible: _error != null, child: SizedBox(width: 8)),
-
             Visibility(
               visible: _error != null,
               child: IconButton(

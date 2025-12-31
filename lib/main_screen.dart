@@ -50,76 +50,76 @@ class _MainScreenState extends State<MainScreen> {
     return WillPopScope(
       onWillPop: () => _onWillPop(navProvider),
       child: Scaffold(
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: IndexedStack(
-                // از selectedIndex در provider استفاده می‌کنیم
-                index: navProvider.selectedIndex,
-                children: [
-                  Navigator(
-                    key: _homeKey,
-                    onGenerateRoute: (settings) => MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: IndexedStack(
+                  // از selectedIndex در provider استفاده می‌کنیم
+                  index: navProvider.selectedIndex,
+                  children: [
+                    Navigator(
+                      key: _homeKey,
+                      onGenerateRoute: (settings) => MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
                     ),
-                  ),
-                  Navigator(
-                    key: _configKey,
-                    onGenerateRoute: (settings) => MaterialPageRoute(
-                      builder: (context) => ListOfConfigsScreen(),
+                    Navigator(
+                      key: _configKey,
+                      onGenerateRoute: (settings) => MaterialPageRoute(
+                        builder: (context) => ListOfConfigsScreen(),
+                      ),
                     ),
-                  ),
-                  Navigator(
-                    key: _profileKey,
-                    onGenerateRoute: (settings) => MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
+                    Navigator(
+                      key: _profileKey,
+                      onGenerateRoute: (settings) => MaterialPageRoute(
+                        builder: (context) => const ProfileScreen(),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: GlassBox(
-                  width: size.width,
-                  height: btmNavHeight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      BtmNavItem(
-                        icon: Icons.person,
-                        // متد provider را برای تغییر تب صدا می‌زنیم
-                        ontap: () =>
-                            navProvider.changeTab(BtmNavScreenIndex.profile),
-                        isSelected:
-                            navProvider.selectedIndex ==
-                            BtmNavScreenIndex.profile,
-                      ),
-                      BtmNavItem(
-                        icon: Icons.home,
-                        ontap: () =>
-                            navProvider.changeTab(BtmNavScreenIndex.home),
-                        isSelected:
-                            navProvider.selectedIndex == BtmNavScreenIndex.home,
-                      ),
-                      BtmNavItem(
-                        icon: Icons.signal_cellular_alt,
-                        ontap: () =>
-                            navProvider.changeTab(BtmNavScreenIndex.config),
-                        isSelected:
-                            navProvider.selectedIndex ==
-                            BtmNavScreenIndex.config,
-                      ),
-                    ],
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: GlassBox(
+                    width: size.width,
+                    height: btmNavHeight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        BtmNavItem(
+                          icon: Icons.person,
+                          // متد provider را برای تغییر تب صدا می‌زنیم
+                          ontap: () =>
+                              navProvider.changeTab(BtmNavScreenIndex.profile),
+                          isSelected: navProvider.selectedIndex ==
+                              BtmNavScreenIndex.profile,
+                        ),
+                        BtmNavItem(
+                          icon: Icons.home,
+                          ontap: () =>
+                              navProvider.changeTab(BtmNavScreenIndex.home),
+                          isSelected: navProvider.selectedIndex ==
+                              BtmNavScreenIndex.home,
+                        ),
+                        BtmNavItem(
+                          icon: Icons.signal_cellular_alt,
+                          ontap: () =>
+                              navProvider.changeTab(BtmNavScreenIndex.config),
+                          isSelected: navProvider.selectedIndex ==
+                              BtmNavScreenIndex.config,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

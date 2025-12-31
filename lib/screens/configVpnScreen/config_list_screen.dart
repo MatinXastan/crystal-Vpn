@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:vpn/data/model/config_model.dart';
 import 'package:vpn/data/repo/recive_configs_repo.dart';
 import 'package:vpn/gen/assets.gen.dart';
-import 'package:vpn/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vpn/screens/configVpnScreen/bloc/config_list_bloc.dart';
 import 'package:vpn/screens/configVpnScreen/empty_config_screen.dart';
 import 'package:vpn/screens/configVpnScreen/error_config_screen.dart';
@@ -22,9 +22,16 @@ class ListOfConfigsScreen extends StatefulWidget {
 
 class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
   Timer? _autoClickTimer;
+  // این متغیر وضعیت کلیک دستی کاربر را نگه می‌دارد
+  bool _isManualNavigation = false;
+
   Future<void> _startTimer(state) async {
+    // اگر کاربر قبلاً کلیک کرده، تایمر را شروع نکن
+    if (_isManualNavigation) return;
+
     final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
-    // 1. نمایش اسنک‌بار و ذخیره ارجاع به آن
+
+    // 1. نمایش اسنک‌بار
     final snackBarController = ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(appLocalizations.autoRedirectMsg),
@@ -33,14 +40,15 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
       ),
     );
 
-    // 2. صبر کردن تا زمانی که اسنک‌بار بسته شود
+    // 2. صبر کردن برای بسته شدن اسنک‌بار
     await snackBarController.closed;
 
-    _autoClickTimer = Timer(const Duration(seconds: 10), () async {
-      if (mounted) {
-        // 3. چک کردن مجدد mounted قبل از ناویگیشن (امنیت کد)
+    // اگر در حین نمایش اسنک‌بار کاربر کلیک کرده باشد یا صفحه بسته شده باشد، ادامه نده
+    if (_isManualNavigation || !mounted) return;
 
-        // 4. رفتن به صفحه بعد
+    _autoClickTimer = Timer(const Duration(seconds: 10), () async {
+      // چک کردن مجدد برای اطمینان
+      if (mounted && !_isManualNavigation) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -54,9 +62,18 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
     });
   }
 
+  // تابع کمکی برای مدیریت کلیک دستی
+  void _onManualTap(VoidCallback navigationLogic) {
+    _isManualNavigation = true; // علامت‌گذاری اینکه کاربر خودش کلیک کرده
+    _autoClickTimer?.cancel(); // کنسل کردن تایمر
+    ScaffoldMessenger.of(
+      context,
+    ).hideCurrentSnackBar(); // بستن اسنک‌بار اگر باز است
+    navigationLogic(); // انجام نویگیشن
+  }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _autoClickTimer?.cancel();
     super.dispose();
   }
@@ -86,9 +103,11 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                     return Center(
                       child: EmptyConfigScreen(
                         ontap: () {
+                          // ریست کردن وضعیت در صورت تلاش مجدد
+                          _isManualNavigation = false;
                           context.read<ConfigListBloc>().add(
-                            StartRecivingConfigsEvent(),
-                          );
+                                StartRecivingConfigsEvent(),
+                              );
                         },
                       ),
                     );
@@ -104,6 +123,7 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                           child: ListView(
                             physics: BouncingScrollPhysics(),
                             children: [
+                              // VLESS CARD
                               Padding(
                                 padding: const EdgeInsets.only(
                                   left: 32,
@@ -118,21 +138,24 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                                     protocolType: 'VLESS',
                                     count: state.vless.length,
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => ProtocolScreen(
-                                            configs: convertConfigToModel(
-                                              state.vless,
+                                      _onManualTap(() {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => ProtocolScreen(
+                                              configs: convertConfigToModel(
+                                                state.vless,
+                                              ),
+                                              protocolType: "VLESS",
                                             ),
-                                            protocolType: "VLESS",
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      });
                                     },
                                   ),
                                 ),
                               ),
+                              // VMESS CARD
                               Padding(
                                 padding: const EdgeInsets.only(
                                   left: 32,
@@ -147,25 +170,28 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                                     protocolType: 'VMESS',
                                     count: state.vmess.length,
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (c) => BlocProvider.value(
-                                            value: context
-                                                .read<ConfigListBloc>(),
-                                            child: ProtocolScreen(
-                                              configs: convertConfigToModel(
-                                                state.vmess,
+                                      _onManualTap(() {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (c) => BlocProvider.value(
+                                              value: context
+                                                  .read<ConfigListBloc>(),
+                                              child: ProtocolScreen(
+                                                configs: convertConfigToModel(
+                                                  state.vmess,
+                                                ),
+                                                protocolType: "VMESS",
                                               ),
-                                              protocolType: "VMESS",
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      });
                                     },
                                   ),
                                 ),
                               ),
+                              // TROJAN CARD
                               Padding(
                                 padding: const EdgeInsets.only(
                                   left: 32,
@@ -180,25 +206,28 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                                     protocolType: 'TROJAN',
                                     count: state.trojan.length,
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => BlocProvider.value(
-                                            value: context
-                                                .read<ConfigListBloc>(),
-                                            child: ProtocolScreen(
-                                              configs: convertConfigToModel(
-                                                state.trojan,
+                                      _onManualTap(() {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => BlocProvider.value(
+                                              value: context
+                                                  .read<ConfigListBloc>(),
+                                              child: ProtocolScreen(
+                                                configs: convertConfigToModel(
+                                                  state.trojan,
+                                                ),
+                                                protocolType: "TROJAN",
                                               ),
-                                              protocolType: "TROJAN",
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      });
                                     },
                                   ),
                                 ),
                               ),
+                              // SHADOWSOCKS CARD
                               Padding(
                                 padding: EdgeInsets.only(
                                   left: 32,
@@ -213,25 +242,28 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                                     protocolType: 'SHADOWSOCKS',
                                     count: state.shadowSocks.length,
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => BlocProvider.value(
-                                            value: context
-                                                .read<ConfigListBloc>(),
-                                            child: ProtocolScreen(
-                                              configs: convertConfigToModel(
-                                                state.shadowSocks,
+                                      _onManualTap(() {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => BlocProvider.value(
+                                              value: context
+                                                  .read<ConfigListBloc>(),
+                                              child: ProtocolScreen(
+                                                configs: convertConfigToModel(
+                                                  state.shadowSocks,
+                                                ),
+                                                protocolType: "SHADOWSOCKS",
                                               ),
-                                              protocolType: "SHADOWSOCKS",
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      });
                                     },
                                   ),
                                 ),
                               ),
+                              // TUIC CARD
                               Padding(
                                 padding: EdgeInsets.only(
                                   left: 32,
@@ -246,21 +278,23 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                                     protocolType: 'TUIC',
                                     count: state.tuic.length,
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => BlocProvider.value(
-                                            value: context
-                                                .read<ConfigListBloc>(),
-                                            child: ProtocolScreen(
-                                              configs: convertConfigToModel(
-                                                state.tuic,
+                                      _onManualTap(() {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => BlocProvider.value(
+                                              value: context
+                                                  .read<ConfigListBloc>(),
+                                              child: ProtocolScreen(
+                                                configs: convertConfigToModel(
+                                                  state.tuic,
+                                                ),
+                                                protocolType: "TUIC",
                                               ),
-                                              protocolType: "TUIC",
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      });
                                     },
                                   ),
                                 ),
@@ -274,9 +308,11 @@ class _ListOfConfigsScreenState extends State<ListOfConfigsScreen> {
                     return Center(
                       child: ErrorConfigScreen(
                         onRetry: () {
+                          // ریست کردن وضعیت برای تلاش مجدد
+                          _isManualNavigation = false;
                           context.read<ConfigListBloc>().add(
-                            StartRecivingConfigsEvent(),
-                          );
+                                StartRecivingConfigsEvent(),
+                              );
                         },
                       ),
                     );
