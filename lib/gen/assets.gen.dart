@@ -49,6 +49,16 @@ class $AssetsImagesGen {
       [background, playBlue, playRed, playYellow, stopGreen];
 }
 
+class $AssetsVideoGen {
+  const $AssetsVideoGen();
+
+  /// File path: assets/video/vpn_interdouce.mp4
+  String get vpnInterdouce => 'assets/video/vpn_interdouce.mp4';
+
+  /// List of all assets
+  List<String> get values => [vpnInterdouce];
+}
+
 class $AssetsImagesBackgroundsGen {
   const $AssetsImagesBackgroundsGen();
 
@@ -118,6 +128,7 @@ class Assets {
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const AssetGenImage luncherIcon =
       AssetGenImage('assets/luncher_icon.png');
+  static const $AssetsVideoGen video = $AssetsVideoGen();
 
   /// List of all assets
   static List<AssetGenImage> get values => [luncherIcon];

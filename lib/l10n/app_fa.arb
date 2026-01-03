@@ -13,7 +13,7 @@
   "countLabel": "تعداد: ",
   "allConfigs": "همه کانفیگ‌ها",
   "findNewConfigs": "برای یافتن کانفیگ‌های جدید کلیک کنید",
-  "receivingConfigs": "در حال دریافت کانفیگ‌ها...",
+  "reciveConfigs": "دریافت کانفیگ ها",
   "pingWaitMsg": "لطفاً تا پایان عملیات تست پینگ صبر کنید.",
   "retestNeededMsg": "کانفیگ‌ها نیاز به تست مجدد دارند. تست پینگ شروع می‌شود.",
   "bestConfigSelected": "بهترین کانفیگ انتخاب شد",
@@ -43,5 +43,10 @@
   "errorReceivingConfigs": "خطا در دریافت کانفیگ",
   "retry": "تلاش مجدد",
   "pleaseSelectLanguage": "لطفا زبان خود را انتخاب کنید",
-  "chooseYourLanguage": "زبان خود را انتخاب کنید"
+  "chooseYourLanguage": "زبان خود را انتخاب کنید",
+  "tutorialTitle": "آموزش استفاده",
+  "watchVideo": "ویدیو را مشاهده کنید",
+  "videoSeenAndUnderstood": "ویدیو را دیدم و متوجه شدم",
+  "continueAction": "ادامه",
+  "loadingError": "خطا در بارگذاری"
 }

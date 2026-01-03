@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vpn/services/local_provider.dart';
-import 'package:vpn/splash_screen.dart';
+import 'package:vpn/tutorial_video_screen.dart'; // ایمپورت صفحه جدید
 
 class LanguageSelectionScreen extends StatelessWidget {
   const LanguageSelectionScreen({super.key});
@@ -22,7 +22,7 @@ class LanguageSelectionScreen extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          // همان گرادینت آبی کریستالی که در اسپلش اسکرین داشتید
+          // همان گرادینت آبی کریستالی
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -36,7 +36,7 @@ class LanguageSelectionScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 60),
-              // آیکون یا متن خوش‌آمدگویی
+              // آیکون خوش‌آمدگویی
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -64,7 +64,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white70,
-                  fontFamily: 'Vazir', // اگر فونت وزیر دارید
+                  fontFamily: 'Vazir',
                 ),
               ),
               const SizedBox(height: 40),
@@ -91,12 +91,13 @@ class LanguageSelectionScreen extends StatelessWidget {
                           );
                           await provider.setLocale(Locale(lang['code']));
 
-                          // 2. رفتن به اسپلش اسکرین
+                          // 2. هدایت به صفحه ویدیوی آموزشی (به جای اسپلش اسکرین)
                           if (context.mounted) {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SplashScreen(),
+                                builder: (context) =>
+                                    const TutorialVideoScreen(),
                               ),
                             );
                           }
@@ -114,7 +115,7 @@ class LanguageSelectionScreen extends StatelessWidget {
   }
 }
 
-// ویجت دکمه زبان شیشه‌ای
+// ویجت دکمه زبان شیشه‌ای (بدون تغییر نسبت به کد اصلی شما)
 class _LanguageButton extends StatelessWidget {
   final String flag;
   final String name;
@@ -138,7 +139,7 @@ class _LanguageButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15), // حالت شیشه‌ای
+            color: Colors.white.withOpacity(0.15),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withOpacity(0.2)),
             boxShadow: [

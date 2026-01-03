@@ -83,7 +83,7 @@ class _EmptyConfigScreenState extends State<EmptyConfigScreen> {
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                appLocalizations.receivingConfigs,
+                appLocalizations.reciveConfigs,
                 style: TextStyle(fontSize: 32, color: Colors.black),
               ),
             ),
